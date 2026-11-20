@@ -29,14 +29,9 @@ class AnalyticsAdmin(admin.ModelAdmin):
 
     def changelist_view(self, request, extra_context=None):
 
-        # Invalid reporting periods must not crash the admin page.
-        try:
-            # Reject malformed values and bound the reporting window.
+        # Safely parse and limit reporting periods.
         try:
             days = int(request.GET.get("days", 7))
-        except (TypeError, ValueError):
-            days = 7
-        days = max(1, min(days, 90))
         except (TypeError, ValueError):
             days = 7
         days = max(1, min(days, 90))
