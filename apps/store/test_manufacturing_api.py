@@ -41,6 +41,10 @@ class ManufacturingReconciliationApiTests(TestCase):
         service.assert_called_once_with(completion_id=42)
 
     def test_post_is_not_allowed(self):
+        permission = Permission.objects.get(
+            content_type__app_label="store", codename="view_cuttingcompletion"
+        )
+        self.user.user_permissions.add(permission)
         self.client.force_login(self.user)
         response = self.client.post(self.url)
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 405)
