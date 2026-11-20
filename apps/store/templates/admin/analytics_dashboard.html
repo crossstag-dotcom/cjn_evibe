@@ -37,6 +37,30 @@
 <p class="evibe-subtitle">Links are shown according to your Django staff permissions.</p>
 <hr>
 
+{% if can_view_inventory %}
+<section class="evibe-inventory" aria-label="Inventory overview">
+  <h2>Inventory · Current Variant Stock</h2>
+  <p class="evibe-subtitle">Read-only snapshot of existing stock fields. Warehouse and SKU tracking are coming in the next inventory phase.</p>
+  <div class="evibe-grid">
+    <div class="evibe-panel"><h3>Units in Stock</h3><h2>{{ inventory_summary.units|default:0 }}</h2></div>
+    <div class="evibe-panel"><h3>Tracked Size Variants</h3><h2>{{ inventory_summary.variants|default:0 }}</h2></div>
+    <div class="evibe-panel"><h3>Low Stock Threshold</h3><h2>Below 5 units</h2></div>
+  </div>
+  <h3 style="margin-top:20px;">Priority Stock Alerts</h3>
+  <div style="overflow-x:auto;">
+    <table><thead><tr><th>Product</th><th>Size</th><th>Available Units</th></tr></thead>
+    <tbody>
+    {% for variant in inventory_alerts %}
+      <tr><td>{{ variant.product.name }}</td><td>{{ variant.size }}</td><td>{{ variant.stock }}</td></tr>
+    {% empty %}
+      <tr><td colspan="3">No variants below the stock threshold.</td></tr>
+    {% endfor %}
+    </tbody></table>
+  </div>
+</section>
+<hr>
+{% endif %}
+
 <!-- ================= METRICS ================= -->
 <div class="evibe-grid">
 
