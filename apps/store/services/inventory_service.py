@@ -90,3 +90,25 @@ def transfer_stock(*, variant, source, destination, quantity, reference, user):
         reason=StockMovement.Reason.TRANSFER, reference=reference, user=user
     )
     return outgoing, incoming
+
+
+# Single-warehouse configuration for EVIBE/DENVIX finished goods.
+MAIN_WAREHOUSE_CODE = "MAIN"
+
+
+def get_main_warehouse():
+    """Return the configured main warehouse; do not silently create live stock locations."""
+    try:
+        return Warehouse.objects.get(code=MAIN_WAREHOUSE_CODE, active=True)
+    except Warehouse.DoesNotExist as exc:
+        raise ValidationError(
+            "Main Warehouse is not configured. Create warehouse code MAIN before posting stock."
+        ) from exc
+
+
+def post_main_warehouse_movement(*, variant, delta, reason, reference, user):
+    """Post finished-goods movement to the single operating warehouse."""
+    return post_stock_movement(
+        variant=variant, warehouse=get_main_warehouse(), delta=delta,
+        reason=reason, reference=reference, user=user
+    )
