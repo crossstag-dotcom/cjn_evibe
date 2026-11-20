@@ -39,8 +39,8 @@
 
 {% if can_view_inventory %}
 <section class="evibe-inventory" aria-label="Inventory overview">
-  <h2>Inventory · Current Variant Stock</h2>
-  <p class="evibe-subtitle">Read-only snapshot of existing stock fields. Warehouse and SKU tracking are coming in the next inventory phase.</p>
+  <h2>Inventory · Main Warehouse Overview</h2>
+  <p class="evibe-subtitle">Read-only legacy variant stock totals. Main Warehouse ledger balances are not yet reconciled with ecommerce stock; figures below are not warehouse-specific.</p>
   <div class="evibe-grid">
     <div class="evibe-panel"><h3>Units in Stock</h3><h2>{{ inventory_summary.units|default:0 }}</h2></div>
     <div class="evibe-panel"><h3>Tracked Size Variants</h3><h2>{{ inventory_summary.variants|default:0 }}</h2></div>
