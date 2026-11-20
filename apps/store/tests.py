@@ -125,3 +125,25 @@ class WarehouseLedgerTests(TestCase):
             InventoryBalance.objects.get(variant=self.variant, warehouse=main).quantity, 12
         )
         self.assertFalse(InventoryBalance.objects.filter(warehouse=self.destination).exists())
+
+    def test_wrong_direction_receipt_is_rejected(self):
+        from django.core.exceptions import ValidationError
+        from apps.store.models import StockMovement
+        from apps.store.services.inventory_service import post_stock_movement
+        with self.assertRaises(ValidationError):
+            post_stock_movement(
+                variant=self.variant, warehouse=self.source, delta=-5,
+                reason=StockMovement.Reason.RECEIPT,
+                reference="INVALID-RECEIPT", user=self.user
+            )
+
+    def test_wrong_direction_issue_is_rejected(self):
+        from django.core.exceptions import ValidationError
+        from apps.store.models import StockMovement
+        from apps.store.services.inventory_service import post_stock_movement
+        with self.assertRaises(ValidationError):
+            post_stock_movement(
+                variant=self.variant, warehouse=self.source, delta=5,
+                reason=StockMovement.Reason.ISSUE,
+                reference="INVALID-ISSUE", user=self.user
+            )
