@@ -18,3 +18,5 @@ from .fabric import FabricReceipt, FabricRoll, CuttingOrder, CuttingOrderSize, C
 from .stitching import StitchingTransfer, StitchingTransferSize
 
 from .processing import ProcessingBatch, ProcessingBatchSize
+
+from .quality_control import QualityInspection, QualityInspectionSize
