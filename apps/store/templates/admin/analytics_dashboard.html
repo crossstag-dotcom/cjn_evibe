@@ -61,6 +61,25 @@
 <hr>
 {% endif %}
 
+{% if can_view_manufacturing and manufacturing_summary %}
+<section class="evibe-manufacturing" aria-label="Manufacturing work in progress">
+  <h2>Manufacturing · Cutting to Stitching</h2>
+  <p class="evibe-subtitle">Live work-in-progress quantities from recorded cutting completions and stitching transfers. These are not finished goods or saleable inventory.</p>
+  <div class="evibe-grid">
+    <div class="evibe-panel"><h3>Cut Pieces Completed</h3><h2>{{ manufacturing_summary.cut_pieces }}</h2></div>
+    <div class="evibe-panel"><h3>Issued to Stitching</h3><h2>{{ manufacturing_summary.issued_to_stitching }}</h2></div>
+    <div class="evibe-panel"><h3>Received at Stitching</h3><h2>{{ manufacturing_summary.received_at_stitching }}</h2></div>
+    <div class="evibe-panel"><h3>Remaining in Cutting</h3><h2>{{ manufacturing_summary.remaining_in_cutting }}</h2></div>
+    <div class="evibe-panel"><h3>In Transit</h3><h2>{{ manufacturing_summary.in_transit }}</h2></div>
+    <div class="evibe-panel"><h3>Receipt Shortage</h3><h2>{{ manufacturing_summary.receipt_shortage }}</h2></div>
+  </div>
+  {% if not manufacturing_summary.reconciliation_ok %}
+  <p role="alert">Production quantities require reconciliation. Review cutting completions and stitching transfers before posting further movements.</p>
+  {% endif %}
+</section>
+<hr>
+{% endif %}
+
 <!-- ================= METRICS ================= -->
 <div class="evibe-grid">
 
