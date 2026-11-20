@@ -30,7 +30,7 @@
 <div class="evibe-grid">
 
     <div class="evibe-panel">
-        <h3>Revenue Today</h3>
+        <h3>Delivered Order Value Today</h3>
         <h2>₹{{ revenue_today }}</h2>
     </div>
 
@@ -59,12 +59,12 @@
     </div>
 
     <div class="evibe-panel">
-        <h3>Returns</h3>
+        <h3>Return Requests (All Time)</h3>
         <h2>{{ returns_count }}</h2>
     </div>
 
     <div class="evibe-panel">
-        <h3>Refunds</h3>
+        <h3>Successful Refunds (All Time)</h3>
         <h2>₹{{ refunds_total }}</h2>
     </div>
 
@@ -91,7 +91,7 @@
 
     <!-- Revenue Trend -->
     <div class="evibe-panel">
-        <h3>Revenue Trend</h3>
+        <h3>Delivered Order Value Trend</h3>
         <canvas id="revenueChart"></canvas>
     </div>
 
@@ -197,7 +197,7 @@ new Chart(document.getElementById('revenueChart'), {
     data: {
         labels: revenueLabels,
         datasets: [{
-            label: 'Revenue ₹',
+            label: 'Delivered order value ₹',
             data: revenueValues,
             borderWidth: 3,
             fill: true,
