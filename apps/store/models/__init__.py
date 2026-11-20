@@ -22,3 +22,5 @@ from .processing import ProcessingBatch, ProcessingBatchSize
 from .quality_control import QualityInspection, QualityInspectionSize
 
 from .finishing import FinishingBatch, FinishingBatchSize, ReworkTicket
+
+from .finished_goods import FinishedGoodsReceipt
