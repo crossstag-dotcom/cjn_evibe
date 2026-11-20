@@ -31,7 +31,12 @@ class AnalyticsAdmin(admin.ModelAdmin):
 
         # Invalid reporting periods must not crash the admin page.
         try:
+            # Reject malformed values and bound the reporting window.
+        try:
             days = int(request.GET.get("days", 7))
+        except (TypeError, ValueError):
+            days = 7
+        days = max(1, min(days, 90))
         except (TypeError, ValueError):
             days = 7
         days = max(1, min(days, 90))
