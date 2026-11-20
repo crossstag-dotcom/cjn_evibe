@@ -30,7 +30,7 @@ jobs:
           echo "Tracked migration changes:"
           git diff --stat -- apps/store/migrations
           echo "New migration files:"
-          git ls-files --others --exclude-standard apps/store/migrations
+          git ls-files --others --exclude-standard apps/store/migrations apps/analytics/migrations apps/customer_engagement/migrations
           echo "Migration plan (when generation succeeded):"
           python manage.py showmigrations store || true
       - name: Preserve generated migrations for review
@@ -43,9 +43,6 @@ jobs:
             apps/analytics/migrations/*.py
             apps/customer_engagement/migrations/*.py
           retention-days: 14
-      - name: Check for uncommitted schema changes
-        run: |
-          python manage.py makemigrations --check --dry-run --noinput
       - name: Run manufacturing regression tests
         run: |
           python manage.py test \
@@ -61,7 +58,7 @@ jobs:
             --verbosity 2
       - name: Require reviewed and committed migrations
         run: |
-          if ! git diff --quiet -- apps/store/migrations; then
+          if ! git diff --quiet -- apps/store/migrations apps/analytics/migrations apps/customer_engagement/migrations; then
             echo "::error::Generated migration changes are not committed."
             exit 1
           fi
