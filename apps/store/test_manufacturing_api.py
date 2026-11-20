@@ -48,3 +48,38 @@ class ManufacturingReconciliationApiTests(TestCase):
         self.client.force_login(self.user)
         response = self.client.post(self.url)
         self.assertEqual(response.status_code, 405)
+
+
+class MobileManufacturingSummaryApiTests(TestCase):
+    def setUp(self):
+        self.url = reverse("manufacturing_summary_api")
+        self.user = get_user_model().objects.create_user(username="mobile_staff", password="test-password")
+
+    def test_unauthenticated_client_redirects_to_existing_login(self):
+        self.assertEqual(self.client.get(self.url).status_code, 302)
+
+    def test_authenticated_without_permission_is_forbidden(self):
+        self.client.force_login(self.user)
+        self.assertEqual(self.client.get(self.url).status_code, 403)
+
+    @patch("apps.store.views.manufacturing_api.get_manufacturing_summary")
+    def test_permitted_client_gets_versioned_shared_contract(self, summary):
+        permission = Permission.objects.get(
+            content_type__app_label="store", codename="view_cuttingcompletion"
+        )
+        self.user.user_permissions.add(permission)
+        self.client.force_login(self.user)
+        summary.return_value = {"cut_pieces": 105, "remaining_in_cutting": 5}
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["schema_version"], 1)
+        self.assertEqual(response.json()["summary"]["cut_pieces"], 105)
+        self.assertEqual(response["Cache-Control"], "no-store")
+
+    def test_mobile_api_does_not_accept_mutations(self):
+        permission = Permission.objects.get(
+            content_type__app_label="store", codename="view_cuttingcompletion"
+        )
+        self.user.user_permissions.add(permission)
+        self.client.force_login(self.user)
+        self.assertEqual(self.client.post(self.url).status_code, 405)
