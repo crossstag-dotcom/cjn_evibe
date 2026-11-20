@@ -19,6 +19,8 @@ from apps.store.services.analytics_service import (
     get_product_views_trend
 )
 
+from apps.store.services.manufacturing_dashboard_service import get_manufacturing_summary
+
 from apps.analytics.models import AnalyticsDashboard
 from apps.store.models import Order, Product, ProductVariant, ReturnRequest
 
@@ -81,6 +83,11 @@ class AnalyticsAdmin(admin.ModelAdmin):
         context = {
             **(extra_context or {}),
             "navigation": navigation,
+            "can_view_manufacturing": request.user.has_perm("store.view_cuttingcompletion"),
+            "manufacturing_summary": (
+                get_manufacturing_summary()
+                if request.user.has_perm("store.view_cuttingcompletion") else None
+            ),
             "can_view_inventory": can_view_inventory,
             "inventory_summary": inventory_summary,
             "inventory_alerts": inventory_alerts,
