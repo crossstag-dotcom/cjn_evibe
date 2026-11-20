@@ -1,5 +1,7 @@
 from django.contrib import admin
 from django.template.response import TemplateResponse
+from django.core.exceptions import PermissionDenied
+from django.urls import reverse
 
 from apps.store.services.analytics_service import (
     get_revenue_today,
@@ -17,6 +19,7 @@ from apps.store.services.analytics_service import (
 )
 
 from apps.analytics.models import AnalyticsDashboard
+from apps.store.models import Order, Product, ReturnRequest
 
 
 
@@ -28,6 +31,24 @@ class AnalyticsAdmin(admin.ModelAdmin):
     change_list_template = "admin/analytics_dashboard.html"
 
     def changelist_view(self, request, extra_context=None):
+        if not self.has_view_or_change_permission(request):
+            raise PermissionDenied
+
+        navigation = []
+        for model, label in (
+            (Order, "Orders"),
+            (Product, "Products"),
+            (ReturnRequest, "Returns"),
+        ):
+            model_admin = admin.site._registry.get(model)
+            if model_admin and model_admin.has_view_or_change_permission(request):
+                navigation.append({
+                    "label": label,
+                    "url": reverse(
+                        f"admin:{model._meta.app_label}_{model._meta.model_name}_changelist"
+                    ),
+                })
+
 
         # Safely parse and limit reporting periods.
         try:
@@ -43,6 +64,8 @@ class AnalyticsAdmin(admin.ModelAdmin):
         view_labels, view_values = get_product_views_trend(days)
 
         context = {
+            **(extra_context or {}),
+            "navigation": navigation,
             "revenue_today": get_revenue_today(),
             "orders_today": get_orders_today(),
             "pending_orders": get_pending_orders(),
