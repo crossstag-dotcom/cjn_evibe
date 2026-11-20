@@ -6,6 +6,7 @@ from django.views.decorators.http import require_GET
 
 from apps.store.models import CuttingCompletion
 from apps.store.services.manufacturing_dashboard_service import get_manufacturing_summary
+from apps.store.services.inventory_reconciliation_service import get_variant_stock_reconciliation
 from apps.store.services.production_reconciliation_service import cutting_to_stitching_reconciliation
 from apps.store.services.stitching_transfer_monitor_service import get_pending_stitching_transfers
 
@@ -51,5 +52,22 @@ def pending_stitching_transfers_api(request):
         "schema_version": 1,
         "pending_transfers": get_pending_stitching_transfers(limit=limit),
     })
+    response["Cache-Control"] = "no-store"
+    return response
+
+
+@login_required
+@permission_required("store.view_inventorybalance", raise_exception=True)
+@require_GET
+def variant_inventory_reconciliation_api(request, variant_id):
+    """Inspect website vs MAIN warehouse balances without changing either."""
+    from apps.store.models import ProductVariant
+    try:
+        result = get_variant_stock_reconciliation(variant_id=variant_id)
+    except ProductVariant.DoesNotExist:
+        return JsonResponse({"error": "Product variant not found."}, status=404)
+    except ValidationError as exc:
+        return JsonResponse({"error": exc.messages}, status=409)
+    response = JsonResponse({"schema_version": 1, "reconciliation": result})
     response["Cache-Control"] = "no-store"
     return response
