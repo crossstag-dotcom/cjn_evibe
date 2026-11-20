@@ -87,3 +87,31 @@ class CuttingOrderSize(models.Model):
             models.UniqueConstraint(fields=["order", "size"], name="unique_cutting_order_size"),
             models.CheckConstraint(condition=Q(planned_pieces__gt=0), name="cutting_size_pieces_positive"),
         ]
+
+
+class CuttingCompletion(models.Model):
+    """Posted actuals; one final completion per cutting order."""
+    order = models.OneToOneField(CuttingOrder, on_delete=models.PROTECT, related_name="completion")
+    consumed_meters = models.DecimalField(max_digits=11, decimal_places=3)
+    waste_meters = models.DecimalField(max_digits=11, decimal_places=3)
+    leftover_meters = models.DecimalField(max_digits=11, decimal_places=3)
+    completed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
+    completed_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.CheckConstraint(condition=Q(consumed_meters__gte=0), name="cutting_consumed_nonnegative"),
+            models.CheckConstraint(condition=Q(waste_meters__gte=0), name="cutting_waste_nonnegative"),
+            models.CheckConstraint(condition=Q(leftover_meters__gte=0), name="cutting_leftover_nonnegative"),
+        ]
+
+
+class CuttingCompletionSize(models.Model):
+    completion = models.ForeignKey(CuttingCompletion, on_delete=models.PROTECT, related_name="size_lines")
+    size = models.CharField(max_length=12)
+    actual_pieces = models.PositiveIntegerField()
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["completion", "size"], name="unique_cutting_completion_size"),
+        ]
