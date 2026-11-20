@@ -9,11 +9,11 @@ from apps.analytics.models import ProductView
 
 
 def get_revenue_today():
-    today = timezone.now().date()
+    today = timezone.localdate()
 
     revenue = (
         Order.objects.filter(
-            created_at__date=today,
+            delivered_at__date=today,
             status="DELIVERED"
         ).aggregate(total=Sum("total_amount"))["total"] or 0
     )
@@ -73,7 +73,7 @@ def get_orders_trend(days=7):
     start_date = end_date - timedelta(days=days - 1)
 
     data = (
-        Order.objects.filter(created_at__date__gte=start_date)
+        Order.objects.filter(created_at__date__range=(start_date, end_date))
         .values("created_at__date")
         .annotate(count=Count("id"))
         .order_by("created_at__date")
@@ -118,12 +118,12 @@ def get_revenue_trend(days=7):
 
     data = (
         Order.objects.filter(
-            created_at__date__gte=start_date,
+            delivered_at__date__range=(start_date, end_date),
             status="DELIVERED"   # ✅ only completed revenue
         )
-        .values("created_at__date")
+        .values("delivered_at__date")
         .annotate(total=Sum("total_amount"))
-        .order_by("created_at__date")
+        .order_by("delivered_at__date")
     )
 
     trend = {}
@@ -133,7 +133,7 @@ def get_revenue_trend(days=7):
         trend[date] = 0
 
     for row in data:
-        trend[row["created_at__date"]] = float(row["total"] or 0)
+        trend[row["delivered_at__date"]] = float(row["total"] or 0)
 
     labels = [d.strftime("%d %b") for d in trend.keys()]
     values = list(trend.values())
@@ -144,11 +144,11 @@ def get_revenue_trend(days=7):
 def get_product_views_trend(days=7):
 
     today = timezone.now().date()
-    start_date = today - timedelta(days=days)
+    start_date = today - timedelta(days=days - 1)
 
     data = (
         ProductView.objects
-        .filter(created_at__date__gte=start_date)
+        .filter(created_at__date__range=(start_date, today))
         .annotate(date=TruncDate("created_at"))
         .values("date")
         .annotate(total_views=Count("id"))
