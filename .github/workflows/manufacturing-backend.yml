@@ -42,6 +42,7 @@ jobs:
             apps.store.test_stitching_receipt_service \
             apps.store.test_production_reconciliation_service \
             apps.store.test_manufacturing_api \
+            apps.store.test_manufacturing_dashboard_service \
             --verbosity 2
       - name: Require reviewed and committed migrations
         run: |
