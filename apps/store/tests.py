@@ -46,3 +46,62 @@ class ExecutiveDashboardTests(TestCase):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 302)
         self.assertIn("/admin/login/", response["Location"])
+
+
+class WarehouseLedgerTests(TestCase):
+    """Run after creating and applying the inventory model migrations."""
+
+    @classmethod
+    def setUpTestData(cls):
+        from decimal import Decimal
+        from apps.store.models import Product, ProductVariant, Warehouse
+        cls.user = get_user_model().objects.create_superuser(
+            username="ledger-test-admin", email="ledger-test@example.invalid",
+            password="test-password-not-for-production"
+        )
+        product = Product.objects.create(
+            product_code="LEDGER-TEST", name="Ledger test trouser",
+            cost_price=Decimal("100.00"), mrp=Decimal("200.00"),
+            price=Decimal("150.00"),
+        )
+        cls.variant = ProductVariant.objects.create(product=product, size="32", stock=0)
+        cls.source = Warehouse.objects.create(code="TEST-MAIN", name="Test Main")
+        cls.destination = Warehouse.objects.create(code="TEST-B", name="Test B")
+
+    def test_transfer_preserves_total_and_records_both_sides(self):
+        from apps.store.models import InventoryBalance, StockMovement
+        from apps.store.services.inventory_service import post_stock_movement, transfer_stock
+        post_stock_movement(
+            variant=self.variant, warehouse=self.source, delta=50,
+            reason=StockMovement.Reason.RECEIPT, reference="GRN-TEST-1", user=self.user
+        )
+        transfer_stock(
+            variant=self.variant, source=self.source, destination=self.destination,
+            quantity=20, reference="TRF-TEST-1", user=self.user
+        )
+        self.assertEqual(InventoryBalance.objects.get(variant=self.variant, warehouse=self.source).quantity, 30)
+        self.assertEqual(InventoryBalance.objects.get(variant=self.variant, warehouse=self.destination).quantity, 20)
+        self.assertEqual(StockMovement.objects.filter(reference="TRF-TEST-1").count(), 2)
+
+    def test_insufficient_stock_does_not_create_movement(self):
+        from django.core.exceptions import ValidationError
+        from apps.store.models import StockMovement
+        from apps.store.services.inventory_service import post_stock_movement
+        with self.assertRaises(ValidationError):
+            post_stock_movement(
+                variant=self.variant, warehouse=self.source, delta=-1,
+                reason=StockMovement.Reason.ISSUE, reference="ISS-TEST-1", user=self.user
+            )
+        self.assertFalse(StockMovement.objects.filter(reference="ISS-TEST-1").exists())
+
+    def test_duplicate_reference_is_rejected(self):
+        from django.core.exceptions import ValidationError
+        from apps.store.models import StockMovement
+        from apps.store.services.inventory_service import post_stock_movement
+        args = dict(
+            variant=self.variant, warehouse=self.source, delta=5,
+            reason=StockMovement.Reason.RECEIPT, reference="GRN-TEST-DUP", user=self.user
+        )
+        post_stock_movement(**args)
+        with self.assertRaises(ValidationError):
+            post_stock_movement(**args)
