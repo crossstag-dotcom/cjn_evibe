@@ -14,3 +14,5 @@ from .pincode import Pincode
 from .inventory import Warehouse, InventoryBalance, StockMovement
 
 from .fabric import FabricReceipt, FabricRoll, CuttingOrder, CuttingOrderSize, CuttingCompletion, CuttingCompletionSize
+
+from .stitching import StitchingTransfer, StitchingTransferSize
