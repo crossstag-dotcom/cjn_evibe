@@ -1,25 +1,45 @@
 {% extends "admin/base_site.html" %}
 
 {% block content %}
+<style>
+.evibe-dashboard { --ev-bg:#121820; --ev-panel:#202a35; --ev-gold:#d8b878; --ev-text:#f6f2ea; --ev-muted:#b7c1cb; color:var(--ev-text); background:var(--ev-bg); border-radius:18px; padding:clamp(16px,3vw,32px); }
+.evibe-dashboard h1,.evibe-dashboard h2,.evibe-dashboard h3 { color:var(--ev-text); }
+.evibe-dashboard h1 { font-size:clamp(24px,3vw,36px); margin:0; }
+.evibe-dashboard h2 { font-size:20px; margin-top:26px; }
+.evibe-dashboard h3 { font-size:14px; font-weight:600; }
+.evibe-dashboard .evibe-subtitle { color:var(--ev-muted); margin:8px 0 20px; }
+.evibe-dashboard .evibe-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; margin-top:18px; }
+.evibe-dashboard .evibe-grid.charts { grid-template-columns:repeat(2,minmax(0,1fr)); }
+.evibe-dashboard .evibe-panel { background:var(--ev-panel); border:1px solid #374452; padding:20px; border-radius:14px; min-width:0; }
+.evibe-dashboard .evibe-panel h2 { font-size:clamp(24px,2.5vw,32px); color:var(--ev-gold); margin:10px 0 0; }
+.evibe-dashboard a { color:var(--ev-gold); }
+.evibe-dashboard hr { border:0; border-top:1px solid #374452; margin:28px 0; }
+.evibe-dashboard table { width:100%; background:var(--ev-panel); color:var(--ev-text); border-collapse:collapse; }
+.evibe-dashboard th,.evibe-dashboard td { padding:12px; border-bottom:1px solid #374452; text-align:left; color:var(--ev-text); }
+.evibe-dashboard canvas { max-width:100%; }
+@media(max-width:850px) { .evibe-dashboard .evibe-grid,.evibe-dashboard .evibe-grid.charts { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media(max-width:560px) { .evibe-dashboard .evibe-grid,.evibe-dashboard .evibe-grid.charts { grid-template-columns:1fr; } .evibe-dashboard { padding:14px; } }
+</style>
+<div class="evibe-dashboard">
 
-<h1>EVIBE Analytics Dashboard</h1>
+<h1>EVIBE · Executive Analytics</h1>\n<p class="evibe-subtitle">Operational overview · Live Django data</p>
 
 <hr>
 
 <!-- ================= METRICS ================= -->
-<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:20px;">
+<div class="evibe-grid">
 
-    <div style="background:#f5f5f5;padding:20px;border-radius:10px;">
+    <div class="evibe-panel">
         <h3>Revenue Today</h3>
         <h2>₹{{ revenue_today }}</h2>
     </div>
 
-    <div style="background:#f5f5f5;padding:20px;border-radius:10px;">
+    <div class="evibe-panel">
         <h3>Orders Today</h3>
         <h2>{{ orders_today }}</h2>
     </div>
 
-    <div style="background:#f5f5f5;padding:20px;border-radius:10px;">
+    <div class="evibe-panel">
         <h3>Pending Orders</h3>
         <h2>{{ pending_orders }}</h2>
     </div>
@@ -31,19 +51,19 @@
 <!-- ================= ORDER STATUS CARDS ================= -->
 <h2>Order Status</h2>
 
-<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:20px;">
+<div class="evibe-grid">
 
-    <div style="background:#eef;padding:20px;border-radius:10px;">
+    <div class="evibe-panel">
         <h3>In Transit</h3>
         <h2>{{ in_transit_orders }}</h2>
     </div>
 
-    <div style="background:#efe;padding:20px;border-radius:10px;">
+    <div class="evibe-panel">
         <h3>Returns</h3>
         <h2>{{ returns_count }}</h2>
     </div>
 
-    <div style="background:#fee;padding:20px;border-radius:10px;">
+    <div class="evibe-panel">
         <h3>Refunds</h3>
         <h2>₹{{ refunds_total }}</h2>
     </div>
@@ -55,10 +75,10 @@
 <!-- ================= CHARTS ================= -->
 <h2>Analytics Charts</h2>
 
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:20px;">
+<div class="evibe-grid charts">
 
     <!-- Orders Trend -->
-    <div style="background:white;padding:20px;border-radius:10px;">
+    <div class="evibe-panel">
         <h3>Orders Trend</h3>
 
         <div style="margin-bottom:10px;">
@@ -70,7 +90,7 @@
     </div>
 
     <!-- Revenue Trend -->
-    <div style="background:white;padding:20px;border-radius:10px;">
+    <div class="evibe-panel">
         <h3>Revenue Trend</h3>
         <canvas id="revenueChart"></canvas>
     </div>
@@ -78,7 +98,7 @@
 </div>
 
 <!-- Status Pie Chart -->
-<div style="margin-top:30px;background:white;padding:20px;border-radius:10px;width:400px;">
+<div class="evibe-panel" style="margin-top:20px;">
     <h3>Order Status Distribution</h3>
     <canvas id="statusChart"></canvas>
 </div>
@@ -203,7 +223,7 @@ new Chart(document.getElementById('statusChart'), {
 
 <h2>Product Views Trend</h2>
 
-<div style="background:white;padding:20px;border-radius:10px;">
+<div class="evibe-panel">
     <canvas id="viewsChart" height="100"></canvas>
 </div>
 
@@ -246,4 +266,4 @@ new Chart(viewsCtx, {
 });
 </script>
 
-{% endblock %}
+</div>\n{% endblock %}
