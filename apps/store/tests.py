@@ -105,3 +105,23 @@ class WarehouseLedgerTests(TestCase):
         post_stock_movement(**args)
         with self.assertRaises(ValidationError):
             post_stock_movement(**args)
+
+
+    def test_single_warehouse_requires_explicit_main_configuration(self):
+        from django.core.exceptions import ValidationError
+        from apps.store.services.inventory_service import get_main_warehouse
+        with self.assertRaises(ValidationError):
+            get_main_warehouse()
+
+    def test_single_warehouse_posts_to_main_only(self):
+        from apps.store.models import Warehouse, InventoryBalance, StockMovement
+        from apps.store.services.inventory_service import post_main_warehouse_movement
+        main = Warehouse.objects.create(code="MAIN", name="Main Warehouse")
+        post_main_warehouse_movement(
+            variant=self.variant, delta=12, reason=StockMovement.Reason.RECEIPT,
+            reference="MAIN-RECEIPT-1", user=self.user
+        )
+        self.assertEqual(
+            InventoryBalance.objects.get(variant=self.variant, warehouse=main).quantity, 12
+        )
+        self.assertFalse(InventoryBalance.objects.filter(warehouse=self.destination).exists())
