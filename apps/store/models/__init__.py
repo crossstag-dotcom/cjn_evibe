@@ -16,3 +16,5 @@ from .inventory import Warehouse, InventoryBalance, StockMovement
 from .fabric import FabricReceipt, FabricRoll, CuttingOrder, CuttingOrderSize, CuttingCompletion, CuttingCompletionSize
 
 from .stitching import StitchingTransfer, StitchingTransferSize
+
+from .processing import ProcessingBatch, ProcessingBatchSize
