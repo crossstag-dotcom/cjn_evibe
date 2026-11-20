@@ -29,7 +29,12 @@ class AnalyticsAdmin(admin.ModelAdmin):
 
     def changelist_view(self, request, extra_context=None):
 
-        days = int(request.GET.get("days", 7))
+        # Invalid reporting periods must not crash the admin page.
+        try:
+            days = int(request.GET.get("days", 7))
+        except (TypeError, ValueError):
+            days = 7
+        days = max(1, min(days, 90))
 
         labels, values = get_orders_trend(days)
         status_labels, status_values = get_order_status_distribution()
