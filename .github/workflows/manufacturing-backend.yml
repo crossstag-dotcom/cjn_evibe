@@ -24,6 +24,13 @@ jobs:
         run: python manage.py check
       - name: Generate missing development migrations for test database
         run: python manage.py makemigrations --noinput
+      - name: Preserve generated migrations for review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: manufacturing-migration-review
+          path: apps/store/migrations/*.py
+          retention-days: 14
       - name: Run manufacturing regression tests
         run: |
           python manage.py test \
@@ -35,7 +42,7 @@ jobs:
             apps.store.test_stitching_receipt_service \
             apps.store.test_production_reconciliation_service \
             --verbosity 2
-      - name: Flag migrations that still need committing
+      - name: Require reviewed and committed migrations
         run: |
           if ! git diff --quiet -- apps/store/migrations; then
             echo "::error::Generated migration changes are not committed."
