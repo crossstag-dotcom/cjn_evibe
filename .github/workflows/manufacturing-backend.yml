@@ -24,13 +24,28 @@ jobs:
         run: python manage.py check
       - name: Generate missing development migrations for test database
         run: python manage.py makemigrations --noinput
+      - name: Print migration review summary
+        if: always()
+        run: |
+          echo "Tracked migration changes:"
+          git diff --stat -- apps/store/migrations
+          echo "New migration files:"
+          git ls-files --others --exclude-standard apps/store/migrations
+          echo "Migration plan (when generation succeeded):"
+          python manage.py showmigrations store || true
       - name: Preserve generated migrations for review
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: manufacturing-migration-review
-          path: apps/store/migrations/*.py
+          path: |
+            apps/store/migrations/*.py
+            apps/analytics/migrations/*.py
+            apps/customer_engagement/migrations/*.py
           retention-days: 14
+      - name: Check for uncommitted schema changes
+        run: |
+          python manage.py makemigrations --check --dry-run --noinput
       - name: Run manufacturing regression tests
         run: |
           python manage.py test \
