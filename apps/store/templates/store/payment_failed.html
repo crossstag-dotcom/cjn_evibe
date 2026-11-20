@@ -1,0 +1,102 @@
+{% extends "store/base.html" %}
+
+{% block content %}
+
+<section class="min-h-[70vh]
+                flex items-center justify-center
+                px-6 py-20">
+
+    <div class="max-w-2xl mx-auto text-center">
+
+        <!-- Error Icon -->
+        <div class="w-24 h-24
+                    mx-auto
+                    rounded-full
+                    bg-red-100
+                    flex items-center justify-center
+                    mb-8">
+
+            <span class="text-5xl">
+                ✕
+            </span>
+
+        </div>
+
+        <!-- Heading -->
+        <h1 class="hero-title">
+            PAYMENT
+            FAILED
+        </h1>
+
+        <!-- Description -->
+        <p class="mt-6
+                  text-gray-600
+                  text-base md:text-lg
+                  leading-7
+                  max-w-xl
+                  mx-auto">
+
+            We were unable to process your payment.
+
+            No worries — your cart is still safe and
+            you can try again anytime.
+
+        </p>
+
+        <!-- Info Card -->
+        <div class="mt-10
+                    border border-gray-100
+                    rounded-3xl
+                    p-6
+                    md:p-8
+                    bg-gray-50
+                    shadow-sm">
+
+            <p class="text-base text-gray-700">
+                ✓ Your cart has been preserved
+            </p>
+
+            <p class="text-base text-gray-700 mt-3">
+                ✓ No amount was deducted
+            </p>
+
+            <p class="text-base text-gray-700 mt-3">
+                ✓ You can retry checkout anytime
+            </p>
+
+        </div>
+
+        <!-- Buttons -->
+        <div class="mt-12 flex flex-col md:flex-row gap-4 justify-center">
+
+            <a href="{% url 'cart' %}"
+               class="bg-black text-white
+                      px-10 py-4
+                      rounded-xl
+                      uppercase
+                      tracking-[0.2em]
+                      text-sm">
+
+                Return To Cart
+
+            </a>
+
+            <a href="/"
+               class="border border-black
+                      px-10 py-4
+                      rounded-xl
+                      uppercase
+                      tracking-[0.2em]
+                      text-sm">
+
+                Continue Shopping
+
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

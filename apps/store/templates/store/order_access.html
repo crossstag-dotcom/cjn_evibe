@@ -1,0 +1,299 @@
+{% extends "store/base.html" %}
+
+{% block content %}
+
+<section class="min-h-[70vh]
+                flex
+                items-center
+                justify-center
+                px-6 py-20">
+
+    <div class="w-full
+                max-w-xl
+                bg-white
+                border border-gray-100
+                rounded-[32px]
+                p-8 md:p-12
+                shadow-sm">
+
+        <div class="text-center">
+
+            <p class="text-xs
+                      uppercase
+                      tracking-[0.35em]
+                      text-gray-400">
+
+                EVIBE ORDER PORTAL
+
+            </p>
+
+            <h1 class="mt-4
+                       text-3xl
+                       md:text-5xl
+                       font-light
+                       tracking-[0.04em]">
+
+                MY ORDERS
+
+            </h1>
+
+            <p class="mt-4
+                      text-gray-500
+                      max-w-md
+                      mx-auto">
+
+                Access your EVIBE orders securely using your email address.
+
+            </p>
+
+        </div>
+
+        <!-- EMAIL STEP -->
+
+        <div id="emailSection"
+             class="mt-10">
+
+            <label class="block
+                         mb-3
+                         text-sm
+                         uppercase
+                         tracking-[0.15em]">
+
+                Email Address
+
+            </label>
+
+            <input
+                type="email"
+                id="email"
+                placeholder="you@example.com"
+                class="w-full
+                       border
+                       border-gray-200
+                       rounded-2xl
+                       px-5 py-4
+                       focus:outline-none
+                       focus:border-black">
+
+            <button
+                id="sendOtpBtn"
+                class="w-full
+                       mt-5
+                       bg-black
+                       text-white
+                       py-4
+                       rounded-2xl
+                       uppercase
+                       tracking-[0.18em]
+                       text-sm">
+
+                Send OTP
+
+            </button>
+
+        </div>
+
+        <!-- OTP STEP -->
+
+        <div id="orderOtpSection"
+            style = "display: none;"
+            class="mt-10">
+
+            <div class="text-center mb-6">
+
+                <p class="text-green-600">
+
+                    OTP sent successfully
+
+                </p>
+
+            </div>
+
+            <label class="block
+                         mb-3
+                         text-sm
+                         uppercase
+                         tracking-[0.15em]">
+
+                Enter OTP
+
+            </label>
+
+            <input
+                type="text"
+                id="otp"
+                maxlength="6"
+                placeholder="123456"
+                class="w-full
+                       text-center
+                       tracking-[0.4em]
+                       text-xl
+                       border
+                       border-gray-200
+                       rounded-2xl
+                       px-5 py-4
+                       focus:outline-none
+                       focus:border-black">
+
+            <button
+                id="verifyOtpBtn"
+                class="w-full
+                       mt-5
+                       bg-black
+                       text-white
+                       py-4
+                       rounded-2xl
+                       uppercase
+                       tracking-[0.18em]
+                       text-sm">
+
+                Verify OTP
+
+            </button>
+
+        </div>
+
+        <div id="message"
+             class="mt-5
+                    text-center
+                    text-sm">
+
+        </div>
+
+    </div>
+
+</section>
+
+<script>
+
+const emailInput =
+    document.getElementById("email");
+
+const otpInput =
+    document.getElementById("otp");
+
+const messageBox =
+    document.getElementById("message");
+
+document
+.getElementById("sendOtpBtn")
+.addEventListener(
+    "click",
+    
+    async () => {
+        const email =
+            emailInput.value.trim();
+ 
+        
+        const response =
+            await fetch(
+                "/engagement/send-otp/",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type":
+                        "application/json"
+                    },
+                    body: JSON.stringify({
+                        email: email
+                    })
+                }
+            );
+
+        const data =
+            await response.json();
+
+        messageBox.innerHTML =
+            data.message;
+
+            if (data.success) {
+
+                const emailSection =
+                    document.getElementById(
+                        "emailSection"
+                    );
+
+                const otpSection =
+                    document.getElementById(
+                        "orderOtpSection"
+                    );
+
+
+                emailSection.style.display =
+                    "none";
+
+                otpSection.style.display =
+                    "block";
+
+            }
+    }
+);
+
+document
+.getElementById("verifyOtpBtn")
+.addEventListener(
+    "click",
+    async () => {
+
+        const response =
+            await fetch(
+                "/engagement/verify-otp/",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type":
+                        "application/json"
+                    },
+                    body: JSON.stringify({
+                        email:
+                            emailInput.value.trim(),
+                        otp:
+                            otpInput.value.trim()
+                    })
+                }
+            );
+
+        const data =
+            await response.json();
+
+        messageBox.innerHTML =
+            data.message;
+
+        if (data.success) {
+
+                    if (data.new_user) {
+
+                        messageBox.innerHTML = `
+                            <div class="bg-green-50
+                                        border border-green-200
+                                        text-green-700
+                                        rounded-2xl
+                                        p-4">
+
+                                🎉 Welcome to EVIBE Rewards!
+                                Your member reward has been activated.
+
+                            </div>
+                        `;
+
+                        setTimeout(() => {
+
+                            window.location.href =
+                                "/my-orders/";
+
+                        }, 2500);
+
+                    }
+                    else {
+
+                        window.location.href =
+                            "/my-orders/";
+
+                    }
+        }
+    }
+);
+
+</script>
+
+{% endblock %}

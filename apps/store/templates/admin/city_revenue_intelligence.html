@@ -1,0 +1,100 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+
+<h1>City Wise Revenue Intelligence</h1>
+
+<hr>
+
+<div style="margin-bottom:20px;">
+    <strong>Time Filter:</strong>
+
+    <a href="?days=7">7 Days</a> |
+    <a href="?days=30">30 Days</a> |
+    <a href="?days=90">90 Days</a> |
+    <a href="?days=all">All Time</a>
+
+    <p style="margin-top:10px;">
+        Showing:
+        <strong>{{ selected_days }}</strong>
+    </p>
+</div>
+
+<hr>
+
+{% for city, products in city_data.items %}
+
+    <div style="
+        margin-top:40px;
+        background:#f8fafc;
+        padding:20px;
+        border-radius:12px;
+        border:1px solid #e5e7eb;
+    ">
+
+        <h2 style="margin-bottom:20px;">
+            {{ city }}
+        </h2>
+
+        <table class="adminlist" style="width:100%;">
+
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Views</th>
+                    <th>Orders</th>
+                    <th>Conversion %</th>
+                    <th>Payment Drop-Offs</th>
+                    <th>Business Insight</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for item in products %}
+                <tr>
+
+                    <td>
+                        {{ item.product_name }}
+                    </td>
+
+                    <td>
+                        {{ item.views }}
+                    </td>
+
+                    <td>
+                        {{ item.orders }}
+                    </td>
+
+                    <td>
+                        {{ item.conversion }}%
+                    </td>
+
+                    <td>
+                        {{ item.dropoffs }}
+                    </td>
+
+                    <td>
+                        <strong>
+                            {{ item.insight }}
+                        </strong>
+                    </td>
+
+                </tr>
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+{% empty %}
+
+    <p>
+        No city-wise revenue data found.
+    </p>
+
+{% endfor %}
+
+{% endblock %}

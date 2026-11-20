@@ -1,0 +1,111 @@
+{% extends "store/base.html" %}
+
+{% block content %}
+
+<script>
+gtag('event', 'purchase', {
+  transaction_id: "{{ order.id }}",
+  value: {{ order.total_amount }},
+  currency: "INR"
+});
+</script>
+
+<section class="min-h-[70vh]
+                flex items-center justify-center
+                px-6 py-20">
+
+    <div class="max-w-2xl mx-auto text-center">
+
+        <!-- Success Icon -->
+        <div class="w-24 h-24
+                    mx-auto
+                    rounded-full
+                    bg-gradient-to-br
+                    from-green-50
+                    to-green-200
+                    flex items-center justify-center
+                    mb-8">
+
+            <span class="text-5xl">
+                ✓
+            </span>
+
+        </div>
+
+        <!-- Heading -->
+        <h1 class="hero-title">
+            ORDER
+            CONFIRMED
+        </h1>
+
+        <!-- Text -->
+        <p class="mt-6
+          text-gray-600
+          text-base md:text-lg
+          leading-7 md:leading-8
+          max-w-xl
+          mx-auto">
+
+            Thank you for choosing EVIBE.
+
+            Your order has been placed successfully and
+            our team is preparing it for dispatch.
+
+        </p>
+
+        <!-- Trust Card -->
+        <div class="mt-10
+                    border border-gray-100
+                    rounded-3xl
+                    p-6
+                    md:p-8
+                    bg-gray-50
+                    shadow-sm">
+
+            <p class="text-sm text-gray-700">
+                ✓ Payment Received
+            </p>
+
+            <p class="text-sm text-gray-600 mt-3">
+                ✓ Order Confirmation Generated
+            </p>
+
+            <p class="text-sm text-gray-600 mt-3">
+                ✓ Dispatch Processing Started
+            </p>
+
+        </div>
+
+        <!-- Buttons -->
+        <div class="mt-12 flex flex-col md:flex-row gap-4 justify-center">
+
+            <a href="/"
+               class="bg-black text-white
+                      px-10 py-4
+                      rounded-xl
+                      uppercase
+                      tracking-[0.2em]
+                      text-sm">
+
+                Continue Shopping
+
+            </a>
+
+            <a href="/my-orders/"
+               class="border border-black
+                      px-10 py-4
+                      rounded-xl
+                      uppercase
+                      tracking-[0.2em]
+                      text-sm">
+
+                View Orders
+
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+{% endblock %}

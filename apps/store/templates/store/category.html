@@ -1,0 +1,244 @@
+{% extends "store/base.html" %}
+{% block content %}
+
+<div class="max-w-[1500px] mx-auto px-4 md:px-8 py-10 md:py-14">
+
+    <div class="text-center mb-12">
+
+        <p class="text-xs
+                uppercase
+                tracking-[0.4em]
+                text-gray-500
+                mb-4">
+
+            EVIBE {{ category.name }} COLLECTION
+
+        </p>
+
+        <p class="mt-4
+                text-gray-500
+                max-w-2xl
+                mx-auto
+                text-center">
+
+            Crafted for comfort, designed for confidence.
+
+        </p>
+
+    </div>
+
+    <div class="flex flex-wrap gap-3 justify-center mb-10 md:mb-14">
+
+            {% for size in available_sizes %}
+
+                <a href="?size={{ size }}"
+                class="
+                    border
+                    rounded-full
+                    px-5 py-2
+                    text-sm
+                    tracking-[0.12em]
+                    uppercase transition duration-300
+
+                    {% if selected_size == size %}
+                        bg-black text-white
+                    {% else %}
+                        hover:bg-black hover:text-white
+                    {% endif %}
+                    ">
+
+                    {{ size }}
+
+                </a>
+
+            {% endfor %}
+
+            {% if selected_size %}
+
+                {% if clear_filter_url == "category_products" %}
+
+                    <a href="{% url 'category_products' category.name %}"
+
+                {% else %}
+
+                    <a href="{% url clear_filter_url %}"
+
+                {% endif %}
+
+                    class="border
+                        rounded-full
+                        px-5 py-2
+                        text-sm
+                        tracking-[0.12em]
+                        uppercase bg-red-500 text-white hover:bg-red-600 transition duration-300">
+
+                    Clear Filter
+
+                </a>
+
+            {% endif %}
+
+    </div>
+
+
+    <div class="grid grid-cols-2
+            lg:grid-cols-4
+            gap-3 md:gap-8">
+
+        {% for product in products %}
+
+            <div class="group bg-white
+                        p-2 md:p-3
+                        rounded-2xl
+                        transition-all duration-500
+                        hover:-translate-y-1
+                        hover:shadow-xl">
+
+                <a href="{% url 'product_detail' product.slug %}">
+
+                    {% if product.images.first %}
+                    <div class="relative">
+                        <!-- SALE 
+                        {% if product.is_offer_active %}
+                            <span class="absolute top-3 left-3 bg-black text-white text-xs px-3 py-1 tracking-wider z-10">
+                                SALE
+                            </span>
+                        {% endif %}
+                        -->
+                        {% if product.is_offer_active %}
+                            <span class="absolute top-3 left-3 bg-black text-white text-xs px-3 py-1 tracking-wider z-10">
+                                -{{ product.get_discount_percentage }}%
+                            </span>
+                        {% endif %}
+                        <!-- BEST SELLER -->
+                        {% if product.is_best_seller %}
+                                <span class="absolute left-6 top-20
+                                            bg-black text-white
+                                            text-[8px]
+                                            px-2 py-1
+                                            tracking-[0.15em]
+                                            rotate-[-90deg]
+                                            origin-left
+                                            z-10">
+                                    BEST SELLER
+                                </span>
+                        {% endif %}
+                    
+                        <!-- NEW -->
+                        {% if product.is_new_arrival %}
+                            <span class="absolute bottom-3 left-3 bg-[#6B7A46] text-white text-xs px-3 py-1 tracking-wider z-10">
+                                NEW
+                            </span>
+                        {% endif %}
+                        <picture>
+                            <source media="(max-width: 600px)"
+                                    srcset="{{ product.images.first.optimized.400|default:product.images.first.original_image.url }}">
+                    
+                            <source media="(max-width: 1024px)"
+                                    srcset="{{ product.images.first.optimized.800|default:product.images.first.original_image.url }}">
+                            <img src="{{ product.images.first.optimized.800|default:product.images.first.original_image.url }}"
+                                loading="lazy"
+                                decoding="async"
+                                class="w-full h-full
+                                object-contain
+                                rounded-xl
+                                mb-3
+                                group-hover:scale-[1.02]
+                                transition duration-500">
+                        </picture>
+                    </div>
+                    {% endif %}
+
+                    <h3 class="product-title">
+                        {{ product.name }}
+                    </h3>
+
+                </a>
+
+                <!-- PRICE -->
+                {% if product.get_final_price != product.price %}
+
+                    <div class="flex items-center gap-3 mt-3">
+
+                        <p class="text-[22px]
+                            md:text-[24px]
+                            font-medium
+                            tracking-[0.04em]">    
+
+                            ₹{{ product.get_final_price }}
+
+                        </p>
+
+                    </div>
+
+                {% else %}
+
+                    <p class="text-[22px]
+                            md:text-[24px]
+                            font-medium
+                            tracking-[0.04em]">
+
+                        ₹{{ product.price }}
+
+                    </p>
+
+                {% endif %}
+
+                <div class="flex items-center gap-3 mt-3">
+                        <!--MRP--> 
+                           <p class="text-sm
+                                text-gray-400
+                                line-through">
+
+                            ₹{{ product.mrp }}
+
+                        </p>
+
+                        <!-- DISCOUNT -->
+                        <span class="bg-black text-white
+                                    text-[9px] md:text-[10px]
+                                    font-semibold
+                                    px-2.5 py-1
+                                    rounded-md
+                                    tracking-[0.08em]
+                                    uppercase
+                                    leading-none">
+
+                            {{ product.get_discount_percentage }}% Off
+
+                        </span>
+
+                </div>
+
+                    <a href="{% url 'product_detail' product.slug %}"
+                        class="mt-4
+                            flex
+                            items-center
+                            justify-center
+                            w-full
+                            px-6 py-3
+                            border
+                            border-black
+                            text-[11px]
+                            uppercase
+                            tracking-[0.18em]
+                            rounded-xl
+                            hover:bg-black
+                            hover:text-white
+                            transition">
+
+                        SHOP NOW →
+
+                    </a>
+
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+{% include "store/testimonials.html" %}
+
+{% endblock %}

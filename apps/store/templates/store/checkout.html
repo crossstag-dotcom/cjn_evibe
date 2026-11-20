@@ -1,0 +1,773 @@
+{% extends "store/base.html" %}
+{% load static %}
+{% block content %}
+
+<script>
+gtag('event', 'begin_checkout', {
+  currency: 'INR',
+  value: {{ subtotal }}
+});
+</script>
+
+<section class="px-6 py-16">
+    <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-16">
+
+        <!-- ================= LEFT SIDE ================= -->
+        <!-- CUSTOMER DETAILS -->
+        <div class="bg-white
+            border border-gray-100
+            rounded-3xl
+            p-6 md:p-10
+            shadow-sm">
+            <h2 class="hero-title text-4xl md:text-5xl mb-3">
+                Almost There 👋
+            </h2>
+
+            <p class="text-gray-500 mb-10">
+                Let's get your EVIBE order ready,
+                we'll guide you through the last step.
+            </p>
+
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+
+                <!-- Name -->
+                <div>
+                    <label class="block mb-1 font-medium">Full Name</label>
+                    <input 
+                        id="customer_name"
+                        type="text"
+                        name="customer_name"
+                        required
+                        minlength="2"
+                        maxlength="50"
+                        pattern="[A-Za-z ]+"
+                        title="Only letters and spaces are allowed"
+                        class="w-full
+                            border border-gray-200
+                            rounded-xl
+                            px-5 py-4
+                            focus:outline-none
+                            focus:border-black
+                            transition">
+                    <p class="text-xs text-gray-500 mt-2">
+                        We'll use this name for your order.
+                    </p>
+                    <p id="customer_name_message"
+                       class="text-xs mt-1 hidden"></p>
+                </div>
+
+                <!-- Phone -->
+                <div>
+                    <label class="block mb-1 font-medium">Mobile Number</label>
+                    <input
+                        id="phone"
+                        type="tel"
+                        name="phone"
+                        required
+                        inputmode="numeric"
+                        pattern="[6-9][0-9]{9}"
+                        maxlength="10"
+                        title="Enter a valid 10-digit mobile number"
+                        class="w-full
+                            border border-gray-200
+                            rounded-xl
+                            px-5 py-4
+                            focus:outline-none
+                            focus:border-black
+                            transition">
+                    <p class="text-xs text-gray-500 mt-2">
+                        We'll send order and delivery updates to this number.
+                    </p>
+                    <p id="phone_message"
+                        class="text-xs mt-1 hidden"></p>
+                </div>
+				
+				<!-- email -->
+                <div>
+                    <label class="block mb-1 font-medium">Email Address</label>
+                    <input
+                        id="email"
+                        type="email"
+                        name="email"
+                        required
+                        class="w-full
+                            border border-gray-200
+                            rounded-xl
+                            px-5 py-4
+                            focus:outline-none
+                            focus:border-black
+                            transition">
+                    <p class="text-xs text-gray-500 mt-2">
+                        Your order confirmation will be sent here.
+                    </p>
+                    <p id="email_message"
+                        class="text-xs mt-1 hidden"></p>                    
+                    
+                </div>
+
+                <!-- Address -->
+                <div>
+                    <label class="block mb-1 font-medium">
+                        🏠 Delivery Address
+                    </label>
+
+                    <input
+                        type="text"
+                        name="house_no"
+                        required
+                        placeholder="House / Flat / Door No."
+                        class="w-full border border-gray-200 rounded-xl px-5 py-4 focus:outline-none focus:border-black transition mb-3">
+
+                    <input
+                        type="text"
+                        name="building"
+                        required
+                        placeholder="Building / Apartment / Layout"
+                        class="w-full border border-gray-200 rounded-xl px-5 py-4 focus:outline-none focus:border-black transition mb-3">
+
+                    <input
+                        type="text"
+                        name="street"
+                        required
+                        placeholder="Street / Area / Locality"
+                        class="w-full border border-gray-200 rounded-xl px-5 py-4 focus:outline-none focus:border-black transition mb-3">
+
+                    <input
+                        type="text"
+                        name="landmark"
+                        placeholder="Landmark (Optional)"
+                        class="w-full border border-gray-200 rounded-xl px-5 py-4 focus:outline-none focus:border-black transition">
+
+                    <p class="text-xs text-gray-500 mt-2">
+                        This helps our delivery partner locate you quickly.
+                    </p>
+                </div>
+
+                <!-- City + Pincode -->
+                <!-- Row 1 -->
+                <div class="grid grid-cols-2 gap-4">
+
+                    <!-- City -->
+                    <div>
+                        <label class="block mb-1 font-medium">City</label>
+
+                        <input
+                            id="city"
+                            type="text"
+                            name="city"
+                            readonly
+                            autocomplete="address-level2"
+                            class="w-full border border-gray-200 rounded-xl px-5 py-4 bg-gray-50 focus:outline-none">
+
+                        <p id="city_message" class="text-xs mt-2 hidden"></p>
+                    </div>
+
+                    <!-- State -->
+                    <div>
+                        <label class="block mb-1 font-medium">State</label>
+
+                        <input
+                            id="state"
+                            type="text"
+                            name="state"
+                            readonly
+                            autocomplete="address-level1"
+                            class="w-full border border-gray-200 rounded-xl px-5 py-4 bg-gray-50 focus:outline-none">
+
+                        <p id="state_message" class="text-xs mt-2 hidden"></p>
+                    </div>
+
+                </div>
+
+                <!-- Row 2 -->
+                <div class="grid grid-cols-2 gap-4 mt-4">
+
+                    <!-- District -->
+                    <div>
+                        <label class="block mb-1 font-medium">District</label>
+
+                        <input
+                            id="district"
+                            type="text"
+                            name="district"
+                            readonly
+                            class="w-full border border-gray-200 rounded-xl px-5 py-4 bg-gray-50 focus:outline-none">
+
+                        <p id="district_message"
+                        class="text-xs mt-2 hidden"></p>
+                    </div>
+
+                    <!-- PIN -->
+                    <div>
+                        <label class="block mb-1 font-medium">PIN Code</label>
+
+                        <input
+                            id="pincode"
+                            type="text"
+                            name="pincode"
+                            required
+                            maxlength="6"
+                            inputmode="numeric"
+                            autocomplete="postal-code"
+                            class="w-full border border-gray-200 rounded-xl px-5 py-4 focus:outline-none focus:border-black transition">
+
+                        <p id="pincode_message"
+                        class="text-xs mt-2 hidden"></p>
+                    </div>
+
+                </div>
+
+                <!-- Payment Method -->
+                <div>
+                    <label class="block mb-1 font-medium">Payment Method</label>
+                    <select
+                        id="payment_method"
+                        name="payment_method"
+                        required
+                            class="w-full
+                                    border border-gray-200
+                                    rounded-xl
+                                    px-5 py-4
+                                    focus:outline-none
+                                    focus:border-black
+                                    transition">
+                        {% if cod_allowed %}
+                        <option value="COD">Cash on Delivery</option>
+                        {% endif %}
+                        <option value="ONLINE">Online Payment</option>
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-3 gap-3 mb-6 text-center">
+
+                        <div class="border rounded-xl p-3">
+                            🔒
+                            <p class="text-xs mt-1">Secure</p>
+                        </div>
+
+                        <div class="border rounded-xl p-3">
+                            🚚
+                            <p class="text-xs mt-1">Fast Delivery</p>
+                        </div>
+
+                        <div class="border rounded-xl p-3">
+                            ↩
+                            <p class="text-xs mt-1">Easy Returns</p>
+                        </div>
+
+                </div>
+                <!-- Place Order -->
+                <button type="submit"
+                        class="w-full
+                            bg-black
+                            text-white
+                            py-4
+                            rounded-xl
+                            uppercase
+                            tracking-[0.18em]
+                            text-sm
+                            hover:bg-gray-800
+                            transition">
+                    Place Order
+                </button>
+            </form>
+        </div>
+
+        <!-- ================= RIGHT SIDE ================= -->
+        <!-- ORDER SUMMARY -->
+        <div class="bg-white
+            border border-gray-100
+            rounded-3xl
+            p-6 md:p-8
+            shadow-sm">
+            <h2 class="text-2xl font-semibold mb-6">
+                Order Summary
+            </h2>
+
+            {% for item in items %}
+
+            <div class="grid grid-cols-[1fr_auto] gap-4 mb-6">
+
+                <div>
+
+                    <p class="font-medium">
+                        {{ item.product.name }}
+                    </p>
+
+                    <p class="text-sm text-gray-500 mt-1">
+                        Size: {{ item.variant.size }}
+                    </p>
+
+                    <p class="text-sm text-gray-500">
+                        Qty: {{ item.quantity }} × ₹{{ item.unit_mrp }}
+                    </p>
+
+                </div>
+
+                <div class="text-right font-medium whitespace-nowrap">
+                    ₹ {{ item.line_mrp }}
+                </div>
+
+            </div>
+
+            {% if not forloop.last %}
+            <hr class="my-4">
+            {% endif %}
+
+            {% endfor %}
+
+            <hr class="my-6">
+
+            <div class="flex justify-between mb-3 text-gray-500">
+                <span>Items Total</span>
+                <span>₹ {{ mrp_total }}</span>
+            </div>
+            
+            <div class="flex justify-between mb-3 text-red-600 font-medium">
+                <span>Product Savings</span>
+                <span>- ₹ {{ savings }}</span>
+            </div>
+
+            {% if reward_coupon %}
+
+            <div class="flex justify-between mb-3
+                        text-green-600 font-semibold">
+
+                <span>
+                     <div class="bg-green-50
+                        border border-green-200
+                        rounded-2xl
+                        p-4 mb-4">
+                    ⚡ EVIBE Reward Applied
+                    </div>
+                </span>
+
+                <span>
+                    - ₹ {{ reward_discount }}
+                </span>
+
+            </div>
+
+            <div class="mb-4 text-xs text-green-600">
+
+                Coupon:
+                {{ reward_coupon.coupon_code }}
+
+                • Valid until
+                {{ reward_coupon.valid_till|date:"d M Y" }}
+
+            </div>
+
+            {% endif %}
+            
+            <div class="flex justify-between mb-3">
+                <span>Shipping</span>
+                <span>₹ {{ shipping_charge }}</span>
+
+            </div>
+
+            <div id="cod-row" class="flex justify-between mb-3">
+
+                <span id="cod-label">COD Processing</span>
+
+                <span id="cod-charge-value">
+                    ₹ {{ cod_charge }}
+                </span>
+
+            </div>
+
+            {% if selected_offer %}
+
+                <div class="flex justify-between mb-3 text-green-600 font-medium">
+
+                    <span>
+                        {{ offer_title }}
+                    </span>
+
+                    <span>
+                        - ₹ {{ offer_discount }}
+                    </span>
+
+                </div>
+
+            {% endif %}
+            
+            <hr class="my-6">
+            
+            <div class="flex justify-between font-semibold text-xl">
+
+                <span>Order Total</span>
+
+                <span id="total-payable">
+                    ₹ {{ final_total }}
+                </span>
+
+            </div>
+            <hr class="my-6">
+
+            <h3 class="font-semibold text-lg mb-4">
+                Payment Summary
+            </h3>
+
+            <div class="space-y-3">
+
+                <div class="flex justify-between">
+                    <span>Pay Today</span>
+                    <span id="pay-today">
+                        ₹ {{ cod_pay_now }}
+                    </span>
+                </div>
+
+                <div class="flex justify-between">
+                    <span>Pay After Delivery</span>
+                    <span id="pay-later">
+                        ₹ {{ cod_pay_later }}
+                    </span>
+                </div>
+
+            </div>
+            <p id="payment-note" class="text-xs text-gray-500 mt-2">
+                Balance payable on delivery.
+            </p>
+            {% if savings > 0 %}
+                <div class="mt-4">
+
+                    <div class="text-green-600 font-semibold">
+                        🎉 You saved ₹ <span id="total-savings">{{ total_savings }}</span>
+                    </div>
+
+                    <div id="savings-breakdown"
+                        class="text-xs text-green-600 mt-1">
+
+                        ₹ {{ total_savings }} Product Discount
+
+                    </div>
+
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+	
+
+
+</section>
+
+<script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const state = document.getElementById("state");
+        const stateMessage = document.getElementById("state_message");
+        
+        const district = document.getElementById("district");
+        const districtMessage = document.getElementById("district_message");
+
+        const paymentMethod = document.getElementById("payment_method");
+        const codChargeValue = document.getElementById("cod-charge-value");
+        const codLabel = document.getElementById("cod-label");
+
+        const paymentNote = document.getElementById("payment-note");
+
+        const payToday = document.getElementById("pay-today");
+
+        const payLater = document.getElementById("pay-later");
+        const totalPayable = document.getElementById("total-payable");
+
+        const totalSavings = document.getElementById("total-savings");
+        const savingsBreakdown = document.getElementById("savings-breakdown");
+
+        const codCharge = Number("{{ cod_charge }}");
+        const totalWithCOD = Number("{{ final_total }}");
+        const totalWithoutCOD = totalWithCOD - codCharge;
+
+        const productSavings = Number("{{ total_savings }}");
+        const codPayNow = Number("{{ cod_pay_now }}");
+        const codPayLater = Number("{{ cod_pay_later }}");
+        const onlinePayNow = Number("{{ online_pay_now }}");
+
+        // Validation Inputs
+        const customerName = document.getElementById("customer_name");
+        const phone = document.getElementById("phone");
+        const email = document.getElementById("email");
+        const city = document.getElementById("city");
+        const pincode = document.getElementById("pincode");
+
+        // Validation Messages
+        const customerNameMessage = document.getElementById("customer_name_message");
+        const phoneMessage = document.getElementById("phone_message");
+        const emailMessage = document.getElementById("email_message");
+        const cityMessage = document.getElementById("city_message");
+        const pincodeMessage = document.getElementById("pincode_message");
+
+        function updateSummary() {
+
+            if (paymentMethod.value === "ONLINE") {
+
+                codLabel.innerHTML = "Online Payment Discount";
+
+                codChargeValue.innerHTML =
+                    "- ₹ " + codCharge.toFixed(2);
+
+                payToday.innerHTML =
+                    "₹ " + totalWithoutCOD.toFixed(2);
+
+                payLater.innerHTML =
+                    "₹ 0";
+                
+                paymentNote.innerHTML =
+                "✔ Fully paid online. Nothing to pay at delivery.";
+
+                totalPayable.innerHTML =
+                    "₹ " + totalWithoutCOD.toFixed(2);
+
+                totalSavings.innerHTML =
+                    (productSavings + codCharge).toFixed(2);
+
+                savingsBreakdown.innerHTML =
+                    "₹ " + productSavings.toFixed(2) +
+                    " Product Discount<br>" +
+                    "₹ " + codCharge.toFixed(2) +
+                    " Online Payment Benefit";
+
+            } else {
+
+                    codLabel.innerHTML = "COD Processing";
+
+                    payToday.innerHTML =
+                        "₹ " + codPayNow.toFixed(2);
+
+                    payLater.innerHTML =
+                        "₹ " + codPayLater.toFixed(2);
+
+                    paymentNote.innerHTML =
+                        "Balance payable on delivery.";
+
+            }
+
+        }
+
+
+
+        function showSuccess(input, messageElement, message) {
+            input.classList.remove("border-red-500");
+            input.classList.add("border-green-500");
+
+            messageElement.textContent = "✓ " + message;
+            messageElement.className = "text-xs mt-2 text-green-600";
+        }
+
+        function showError(input, messageElement, message) {
+            input.classList.remove("border-green-500");
+            input.classList.add("border-red-500");
+
+            messageElement.textContent = "✗ " + message;
+            messageElement.className = "text-xs mt-2 text-red-600";
+        }
+
+        function clearValidation(input, messageElement) {
+            input.classList.remove("border-green-500", "border-red-500");
+
+            messageElement.textContent = "";
+            messageElement.className = "text-xs mt-2 hidden";
+        }
+
+        function validateCustomerName() {
+
+                const value = customerName.value.trim();
+
+                if (value === "") {
+                    clearValidation(customerName, customerNameMessage);
+                    return;
+                }
+
+                const regex = /^[A-Za-z ]{2,50}$/;
+
+                if (regex.test(value)) {
+
+                    showSuccess(
+                        customerName,
+                        customerNameMessage,
+                        "Name looks good"
+                    );
+
+                } else {
+
+                    showError(
+                        customerName,
+                        customerNameMessage,
+                        "Enter a valid full name"
+                    );
+
+                }
+
+            }
+
+            function validatePhone() {
+
+                    const value = phone.value.trim();
+
+                    if (value === "") {
+                        clearValidation(phone, phoneMessage);
+                        return;
+                    }
+
+                    const regex = /^[6-9][0-9]{9}$/;
+
+                    if (regex.test(value)) {
+
+                        showSuccess(
+                            phone,
+                            phoneMessage,
+                            "Valid mobile number"
+                        );
+
+                    } else {
+
+                        showError(
+                            phone,
+                            phoneMessage,
+                            "Enter a valid 10-digit mobile number"
+                        );
+
+                    }
+            }
+
+            function validateEmail() {
+
+                const value = email.value.trim();
+
+                if (value === "") {
+                    clearValidation(email, emailMessage);
+                    return;
+                }
+
+                const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+                if (regex.test(value)) {
+
+                    showSuccess(
+                        email,
+                        emailMessage,
+                        "Valid email address"
+                    );
+
+                } else {
+
+                    showError(
+                        email,
+                        emailMessage,
+                        "Enter a valid email address"
+                    );
+
+                }
+            }
+
+            function clearLocationFields() {
+                city.value = "";
+                district.value = "";
+                state.value = "";
+
+                clearValidation(city, cityMessage);
+                clearValidation(district, districtMessage);
+                clearValidation(state, stateMessage);
+            }
+
+            async function validatePincode() {
+
+                const value = pincode.value.trim();
+
+                if (value === "") {
+                    clearLocationFields();
+                    return;
+                }
+
+                if (!/^[0-9]{6}$/.test(value)) {
+
+                    clearLocationFields();
+                    showError(
+                        pincode,
+                        pincodeMessage,
+                        "PIN Code must contain exactly 6 digits."
+                    );
+                    return;
+                }
+
+                try {
+
+                    const response = await fetch(
+                        `/ajax/pincode/?pincode=${value}`
+                    );
+
+                    const data = await response.json();
+
+                    if (data.success) {
+
+                        city.value = data.city;
+                        district.value = data.district;
+                        state.value = data.state;
+                        showSuccess(
+                            pincode,
+                            pincodeMessage,
+                            "PIN Code verified"
+                        );
+
+                        showSuccess(
+                            city,
+                            cityMessage,
+                            "valid city"
+                        );
+
+                        showSuccess(
+                            district,
+                            districtMessage,
+                            "valid district"
+                        );
+
+                        showSuccess(
+                            state,
+                            stateMessage,
+                            "valid state"
+                        );
+
+                    } else {
+
+                        clearLocationFields();
+                        showError(
+                            pincode,
+                            pincodeMessage,
+                            data.message
+                        );
+                    }
+
+                } catch (error) {
+
+                    clearLocationFields();
+                    showError(
+                        pincode,
+                        pincodeMessage,
+                        "Unable to verify PIN Code."
+                    );
+
+                }
+            }
+
+            customerName.addEventListener("input", validateCustomerName);
+
+            phone.addEventListener("input", validatePhone);
+
+            email.addEventListener("input", validateEmail);
+
+            pincode.addEventListener("input", validatePincode);
+
+            paymentMethod.addEventListener("change", updateSummary);
+            updateSummary();
+
+        });
+
+
+
+</script>
+
+{% endblock %}

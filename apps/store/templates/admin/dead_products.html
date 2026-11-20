@@ -1,0 +1,56 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+
+<h1>Dead Products Report</h1>
+
+<hr>
+
+<p>
+    Rule Applied:
+    Product age ≥ 30 days,
+    Views &lt; 20,
+    Orders &lt; 3
+</p>
+
+<table class="adminlist" style="width:100%;">
+
+    <thead>
+        <tr>
+            <th>Product</th>
+            <th>Total Views</th>
+            <th>Total Orders</th>
+            <th>Business Action</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        {% for item in dead_products %}
+        <tr>
+            <td>{{ item.product_name }}</td>
+
+            <td>{{ item.total_views }}</td>
+
+            <td>{{ item.total_orders }}</td>
+
+            <td>
+                Improve photos /
+                Discount /
+                Ads push /
+                Clearance
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="4">
+                No dead products found
+            </td>
+        </tr>
+        {% endfor %}
+
+    </tbody>
+
+</table>
+
+{% endblock %}

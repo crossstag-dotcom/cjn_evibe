@@ -1,0 +1,76 @@
+✓ Shiprocket Status Mapping
+✓ Courier Webhook Hardening
+✓ SHIPPED Automation
+✓ OUT_FOR_DELIVERY Automation
+✓ DELIVERED Automation
+✓ RTO Automation
+✓ shipment_status handling
+✓ delivered_at consistency
+✓ Idempotent webhook processing
+
+
+SHIPROCKET                     EVIBE
+------------------------------------------------
+PICKUP_SCHEDULED          ->   READY_TO_SHIP
+
+PICKED_UP                 ->   SHIPPED
+IN_TRANSIT                ->   SHIPPED
+REACHED_HUB               ->   SHIPPED
+
+OUT_FOR_DELIVERY          ->   OUT_FOR_DELIVERY
+
+DELIVERED                 ->   DELIVERED
+
+RTO_INITIATED             ->   RTO
+RTO_IN_TRANSIT            ->   RTO
+RTO_DELIVERED             ->   RTO
+
+
+
+Courier Provider
+        ↓
+Provider Status
+        ↓
+EVIBE Logistics Status
+        ↓
+EVIBE Business Status
+
+
+Nimbus 
+ - DTDC
+ - Delhivery
+ - Blue Dart
+ - Xpressbees
+
+Shiprocket 
+ - DTDC
+ - Delhivery
+ - Blue Dart
+ - Xpressbees
+
+Clickpost
+ - DTDC
+ - Delhivery
+ - Blue Dart
+ - Xpressbees
+
+Shipway
+ - DTDC
+ - Delhivery
+ - Blue Dart
+ - Xpressbees
+
+iThink Logistics
+
+In the above scenario, same courier delivery partner will be provided by all the service providers. Then how will you populate the options. 
+My recommendat is show all the options, sub options and sub sub options if there. And the admin shall select the sub option present in the service providers(Nimbus , Shiprocket, Clickpost, shipway )
+
+Then there will be no confusion and then also the admin wil have a clear picture. Is my idea correct ?
+
+There are providers who don't have API integration yet, but they are handling D2C for seller. Now if I make it aligned to shiproket , I will loose money because 
+shiprocket is costly than others. Now is there a way to do it manually just to check in the launch phase 1 ? If yes, how can we do it ?
+
+
+Gardebay Lane, Sama-Savli Rd, near Ambe Public School, Vemali, Vadodara, Gujarat 390024
+
+

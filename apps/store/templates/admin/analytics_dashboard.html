@@ -1,0 +1,249 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+
+<h1>EVIBE Analytics Dashboard</h1>
+
+<hr>
+
+<!-- ================= METRICS ================= -->
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:20px;">
+
+    <div style="background:#f5f5f5;padding:20px;border-radius:10px;">
+        <h3>Revenue Today</h3>
+        <h2>₹{{ revenue_today }}</h2>
+    </div>
+
+    <div style="background:#f5f5f5;padding:20px;border-radius:10px;">
+        <h3>Orders Today</h3>
+        <h2>{{ orders_today }}</h2>
+    </div>
+
+    <div style="background:#f5f5f5;padding:20px;border-radius:10px;">
+        <h3>Pending Orders</h3>
+        <h2>{{ pending_orders }}</h2>
+    </div>
+
+</div>
+
+<hr style="margin-top:40px;">
+
+<!-- ================= ORDER STATUS CARDS ================= -->
+<h2>Order Status</h2>
+
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:20px;">
+
+    <div style="background:#eef;padding:20px;border-radius:10px;">
+        <h3>In Transit</h3>
+        <h2>{{ in_transit_orders }}</h2>
+    </div>
+
+    <div style="background:#efe;padding:20px;border-radius:10px;">
+        <h3>Returns</h3>
+        <h2>{{ returns_count }}</h2>
+    </div>
+
+    <div style="background:#fee;padding:20px;border-radius:10px;">
+        <h3>Refunds</h3>
+        <h2>₹{{ refunds_total }}</h2>
+    </div>
+
+</div>
+
+<hr style="margin-top:40px;">
+
+<!-- ================= CHARTS ================= -->
+<h2>Analytics Charts</h2>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:20px;">
+
+    <!-- Orders Trend -->
+    <div style="background:white;padding:20px;border-radius:10px;">
+        <h3>Orders Trend</h3>
+
+        <div style="margin-bottom:10px;">
+            <a href="?days=7">7 Days</a> |
+            <a href="?days=30">30 Days</a>
+        </div>
+
+        <canvas id="ordersChart"></canvas>
+    </div>
+
+    <!-- Revenue Trend -->
+    <div style="background:white;padding:20px;border-radius:10px;">
+        <h3>Revenue Trend</h3>
+        <canvas id="revenueChart"></canvas>
+    </div>
+
+</div>
+
+<!-- Status Pie Chart -->
+<div style="margin-top:30px;background:white;padding:20px;border-radius:10px;width:400px;">
+    <h3>Order Status Distribution</h3>
+    <canvas id="statusChart"></canvas>
+</div>
+
+<hr style="margin-top:40px;">
+
+<!-- ================= TABLES ================= -->
+<h2>Top Selling Products</h2>
+
+<table class="adminlist">
+    <thead>
+        <tr>
+            <th>Product</th>
+            <th>Sold</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for product in top_products %}
+        <tr>
+            <td>{{ product.product__name }}</td>
+            <td>{{ product.total_sold }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="2">No sales yet</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<hr style="margin-top:40px;">
+
+<h2>Low Stock Alerts</h2>
+
+<table class="adminlist">
+    <thead>
+        <tr>
+            <th>Product</th>
+            <th>Variant</th>
+            <th>Stock</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for variant in low_stock_products %}
+        <tr>
+            <td>{{ variant.product.name }}</td>
+            <td>{{ variant.size }}</td>
+            <td style="color:red;">{{ variant.stock }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="3">All products stocked</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- ================= JSON DATA ================= -->
+{{ chart_labels|json_script:"chart-labels" }}
+{{ chart_values|json_script:"chart-values" }}
+
+{{ revenue_labels|json_script:"revenue-labels" }}
+{{ revenue_values|json_script:"revenue-values" }}
+
+{{ status_labels|json_script:"status-labels" }}
+{{ status_values|json_script:"status-values" }}
+
+<!-- ================= SCRIPTS ================= -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+// Orders Chart
+const orderLabels = JSON.parse(document.getElementById('chart-labels').textContent);
+const orderValues = JSON.parse(document.getElementById('chart-values').textContent);
+
+new Chart(document.getElementById('ordersChart'), {
+    type: 'line',
+    data: {
+        labels: orderLabels,
+        datasets: [{
+            label: 'Orders',
+            data: orderValues,
+            borderWidth: 3,
+            fill: true,
+            tension: 0.3
+        }]
+    }
+});
+
+// Revenue Chart
+const revenueLabels = JSON.parse(document.getElementById('revenue-labels').textContent);
+const revenueValues = JSON.parse(document.getElementById('revenue-values').textContent);
+
+new Chart(document.getElementById('revenueChart'), {
+    type: 'line',
+    data: {
+        labels: revenueLabels,
+        datasets: [{
+            label: 'Revenue ₹',
+            data: revenueValues,
+            borderWidth: 3,
+            fill: true,
+            tension: 0.3
+        }]
+    }
+});
+
+// Status Chart
+const statusLabels = JSON.parse(document.getElementById('status-labels').textContent);
+const statusValues = JSON.parse(document.getElementById('status-values').textContent);
+
+new Chart(document.getElementById('statusChart'), {
+    type: 'pie',
+    data: {
+        labels: statusLabels,
+        datasets: [{
+            data: statusValues
+        }]
+    }
+});
+</script>
+
+<h2>Product Views Trend</h2>
+
+<div style="background:white;padding:20px;border-radius:10px;">
+    <canvas id="viewsChart" height="100"></canvas>
+</div>
+
+{{ view_labels|json_script:"view-labels" }}
+{{ view_values|json_script:"view-values" }}
+
+<script>
+const viewLabels = JSON.parse(document.getElementById('view-labels').textContent);
+const viewValues = JSON.parse(document.getElementById('view-values').textContent);
+
+const viewsCtx = document.getElementById('viewsChart').getContext('2d');
+
+new Chart(viewsCtx, {
+    type: 'line',
+    data: {
+        labels: viewLabels,
+        datasets: [{
+            label: 'Product Views',
+            data: viewValues,
+            borderColor: '#2563eb',
+            backgroundColor: 'rgba(37,99,235,0.15)',
+            borderWidth: 3,
+            fill: true,
+            tension: 0.35
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'top'
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+</script>
+
+{% endblock %}

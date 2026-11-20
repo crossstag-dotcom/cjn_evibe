@@ -1,0 +1,45 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+
+<h1>Views vs Orders</h1>
+
+<hr>
+
+<table class="adminlist" style="width:100%;">
+
+    <thead>
+        <tr>
+            <th>Product</th>
+            <th>Total Views</th>
+            <th>Total Orders</th>
+            <th>Conversion %</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        {% for item in comparison_data %}
+        <tr>
+            <td>{{ item.product_name }}</td>
+            <td>{{ item.total_views }}</td>
+            <td>{{ item.total_orders }}</td>
+            <td>
+                <strong>
+                    {{ item.conversion }}%
+                </strong>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="4">
+                No product data found
+            </td>
+        </tr>
+        {% endfor %}
+
+    </tbody>
+
+</table>
+
+{% endblock %}

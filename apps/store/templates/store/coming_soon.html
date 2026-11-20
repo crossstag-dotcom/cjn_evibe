@@ -1,0 +1,283 @@
+{% extends "store/base.html" %}
+
+{% block content %}
+
+<style>
+
+@keyframes luxuryGlow {
+
+    0% {
+        opacity: .6;
+        text-shadow: 0 0 0 rgba(0,0,0,.15);
+    }
+
+    50% {
+        opacity: 1;
+        text-shadow:
+            0 0 10px rgba(0,0,0,.20),
+            0 0 20px rgba(0,0,0,.08);
+    }
+
+    100% {
+        opacity: .6;
+        text-shadow: 0 0 0 rgba(0,0,0,.15);
+    }
+
+}
+
+.luxury-glow {
+
+    animation: luxuryGlow 4.5s ease-in-out infinite;
+
+}
+
+@keyframes cardBreath {
+
+    0% {
+        transform: scale(1);
+        box-shadow: 0 12px 30px rgba(0,0,0,.06);
+    }
+
+    50% {
+        transform: scale(1.015);
+        box-shadow: 0 18px 45px rgba(0,0,0,.12);
+    }
+
+    100% {
+        transform: scale(1);
+        box-shadow: 0 12px 30px rgba(0,0,0,.06);
+    }
+
+}
+
+.luxury-card {
+
+    animation: cardBreath 6s ease-in-out infinite;
+
+}
+
+</style>
+
+<section class="relative overflow-hidden bg-gradient-to-b from-white via-neutral-50 to-white">
+
+    <!-- Decorative Background -->
+    <div class="absolute inset-0 pointer-events-none">
+        <div class="absolute -top-40 left-1/2 -translate-x-1/2 w-[900px] h-[900px] rounded-full bg-black/5 blur-3xl"></div>
+    </div>
+
+    <div class="relative max-w-6xl mx-auto px-6 py-24 md:py-36 text-center">
+
+        <!-- Premium Label -->
+        <span class="inline-flex items-center gap-2
+                     border border-black
+                     rounded-full
+                     px-6 py-2
+                     text-[11px]
+                     uppercase
+                     tracking-[0.35em]">
+
+            ✦ Exclusive Preview
+
+        </span>
+
+        <!-- Heading -->
+        <h1 class="mt-10
+                text-6xl
+                md:text-8xl
+                font-extralight
+                tracking-[0.22em]
+                uppercase
+                leading-none">
+
+            EVIBE
+
+        </h1>
+
+        <p class="mt-5
+                text-xs
+                uppercase
+                tracking-[0.8em]
+                text-gray-400">
+
+            PRESENTS
+
+        </p>
+
+        <h2 class="mt-6
+                text-3xl
+                md:text-5xl
+                font-light
+                tracking-[0.55em]
+                uppercase">
+
+            Signature Denim
+
+        </h2>
+
+        <p class="mt-8
+                  text-xl
+                  uppercase
+                  tracking-[0.35em]
+                  text-gray-500">
+
+            A New Standard Is Coming
+
+        </p>
+
+        <!-- Divider -->
+        <div class="mt-12 w-24 h-px bg-black mx-auto"></div>
+
+        <!-- Story -->
+        <div class="mt-14
+                    max-w-3xl
+                    mx-auto
+                    space-y-7">
+
+            <p class="text-lg
+                    text-gray-700
+                    leading-9">
+
+                Every thread tells a story.
+
+            </p>
+
+            <p class="text-lg
+                    text-gray-700
+                    leading-9">
+
+                Every fabric has been chosen with intention.
+
+            </p>
+
+            <p class="text-lg
+                    text-gray-700
+                    leading-9">
+
+                Every silhouette is being refined to deliver
+                timeless comfort and effortless confidence.
+
+            </p>
+
+            <p class="text-lg
+                    text-gray-700
+                    leading-9
+                    font-medium">
+
+                Because exceptional denim isn't manufactured.
+
+                <br><br>
+
+                It's crafted.
+
+            </p>
+
+        </div>
+
+        <!-- Luxury Box -->
+        <div class="mt-16
+                    inline-block
+                    bg-white
+                    border
+                    border-gray-200
+                    rounded-3xl
+                    px-10
+                    py-8
+                    shadow-lg
+                    luxury-card">
+
+                <p class="text-xs
+                        uppercase
+                        tracking-[0.35em]
+                        text-gray-400
+                        luxury-glow">
+
+                    ✦ Launching Soon
+
+                </p>
+
+                <p class="mt-4
+                        text-3xl
+                        md:text-4xl
+                        font-light
+                        leading-tight">
+
+                    The Next Chapter
+
+                    <br>
+
+                    Begins Soon.
+
+                </p>
+
+        </div>
+
+        <!-- Buttons -->
+        <div class="mt-16 flex flex-col sm:flex-row justify-center gap-5">
+
+            <a href="{% url 'category_products' 'baggy' %}"
+               class="px-10
+                      py-4
+                      rounded-xl
+                      bg-black
+                      text-white
+                      uppercase
+                      tracking-[0.2em]
+                      hover:scale-105
+                      hover:shadow-2xl
+                      transition-all
+                      duration-300">
+
+                Explore Baggy
+
+            </a>
+
+            <a href="{% url 'category_products' 'lenin' %}"
+               class="px-10
+                      py-4
+                      rounded-xl
+                      border
+                      border-black
+                      uppercase
+                      tracking-[0.2em]
+                      hover:bg-black
+                      hover:text-white
+                      transition-all
+                      duration-300">
+
+                Explore Linen
+
+            </a>
+
+        </div>
+
+        <!-- Footer -->
+        <div class="mt-24">
+
+            <div class="w-40 h-px bg-gray-300 mx-auto"></div>
+
+            <p class="mt-8
+                      text-xs
+                      uppercase
+                      tracking-[0.45em]
+                      text-gray-400">
+
+                EST. 2026 • CRAFTED FOR CONFIDENCE
+
+            </p>
+            <p class="mt-12
+                    text-[11px]
+                    uppercase
+                    tracking-[0.45em]
+                    text-gray-300">
+
+                EVIBE®
+
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

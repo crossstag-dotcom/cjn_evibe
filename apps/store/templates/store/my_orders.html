@@ -1,0 +1,106 @@
+{% extends "store/base.html" %}
+
+{% block content %}
+
+<div class="max-w-4xl mx-auto py-16 px-6">
+
+<h1 class="hero-title mb-4">
+    MY ORDERS
+</h1>
+
+<p class="text-gray-500 mb-10">
+    Track, manage and review your EVIBE purchases.
+</p>
+
+
+
+{% if orders %}
+
+{% for order in orders %}
+
+<div class="bg-white
+            border border-gray-100
+            rounded-3xl
+            p-6 md:p-8
+            mb-6
+            shadow-sm">
+
+<p class="text-xs
+          uppercase
+          tracking-[0.2em]
+          text-gray-400">
+    Order
+</p>
+
+<p class="text-xl font-semibold mt-1">
+    #{{ order.id }}
+</p>
+
+<div class="mt-4">
+
+    <span class="inline-block
+                 bg-[#355E3B]/10
+                 text-[#355E3B]
+                 px-4 py-2
+                 rounded-full
+                 text-sm
+                 font-medium">
+
+        {{ order.status }}
+
+    </span>
+
+</div>
+
+    <p class="mt-5 text-gray-500">
+        Total Amount
+    </p>
+
+    <p class="text-2xl font-semibold">
+        ₹{{ order.total_amount }}
+    </p>
+
+    <div class="mt-6 flex flex-wrap gap-3">
+
+        <a href="{% url 'track_order' order.id %}"
+        class="bg-black
+                text-white
+                px-6 py-3
+                rounded-xl
+                uppercase
+                tracking-[0.15em]
+                text-sm">
+
+            Track Order
+
+        </a>
+
+        {% if order.invoice and order.invoice.invoice_pdf %}
+
+        <a href="{{ order.invoice.invoice_pdf.url }}"
+        target="_blank"
+        class="border
+                border-black
+                px-6 py-3
+                rounded-xl
+                uppercase
+                tracking-[0.15em]
+                text-sm">
+
+            Download Invoice
+
+        </a>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endfor %}
+
+{% endif %}
+
+</div>
+
+{% endblock %}

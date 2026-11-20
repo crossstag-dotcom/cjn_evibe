@@ -1,0 +1,13 @@
+Every time you want to work:
+
+Open VS Code
+
+Open folder E:\evibe
+
+Open terminal
+
+venv\Scripts\activate
+
+python manage.py runserver
+
+Open /admin

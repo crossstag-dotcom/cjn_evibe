@@ -1,0 +1,54 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+
+<h1>Daily Product Interest</h1>
+
+<hr>
+
+{% for date, products in grouped_data.items %}
+
+    <div style="margin-bottom:40px;">
+
+        <h2 style="margin-bottom:15px;">
+            {{ date }}
+        </h2>
+
+        <table class="adminlist" style="width:100%;">
+
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Total Views</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for item in products %}
+                <tr>
+                    <td>
+                        <a href="?product_id={{ item.product_id }}&date={{ date|date:'Y-m-d' }}">
+                            {{ item.product_name }}
+                        </a>
+                    </td>
+
+                    <td>
+                        {{ item.total_views }}
+                    </td>
+                </tr>
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+{% empty %}
+
+    <p>No product views found.</p>
+
+{% endfor %}
+
+{% endblock %}

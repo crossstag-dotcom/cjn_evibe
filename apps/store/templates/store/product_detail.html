@@ -1,0 +1,1352 @@
+{% extends "store/base.html" %}
+
+{% block content %}
+
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+        gtag('event', 'view_item', {
+            currency: 'INR',
+            value: "{{ product.get_final_price }}",
+            items: [{
+                item_id: "{{ product.product_code }}",
+                item_name: "{{ product.name }}",
+                price: "{{ product.get_final_price }}"
+            }]
+        });
+});
+</script>
+
+<section class="max-w-[1500px] mx-auto px-4 md:px-10 py-8 md:py-16">
+    <div class="grid lg:grid-cols-2 gap-10 lg:gap-20 items-start">
+
+        <!-- Premium Product Gallery -->
+        <div class="flex flex-col md:flex-row gap-8">
+        
+            <!-- ================= DESKTOP THUMBNAILS ================= -->
+            <div class="hidden md:flex flex-col items-center">
+
+                <!-- Up -->
+                <button
+                    id="thumbUp"
+                    class="w-9 h-9 rounded-full border border-gray-300 hover:bg-gray-100 transition mb-3">
+
+                    ▲
+
+                </button>
+
+                <!-- Viewport -->
+                <div
+                    id="desktopThumbnailViewport"
+                        class="overflow-hidden h-[520px]">
+
+                    <div
+                        id="desktopThumbnailColumn"
+                        class="flex flex-col gap-4">
+
+                        {% for image in product.images.all %}
+
+                        <div class="w-40 h-40 flex-shrink-0">
+
+                            <img
+                                src="{{ image.optimized.400|default:image.original_image.url }}"
+                                loading="lazy"
+                                decoding="async"
+                                onclick="changeImage({{ forloop.counter0 }})"
+                                class="
+                                    w-full
+                                    h-full
+                                    object-contain
+                                    rounded-xl
+                                    cursor-pointer
+                                    border
+                                    border-gray-200
+                                    hover:border-black
+                                    transition
+                                ">
+
+                        </div>
+
+                        {% endfor %}
+
+                    </div>
+
+                </div>
+
+                <!-- Down -->
+                <button
+                    id="thumbDown"
+                    class="w-9 h-9 rounded-full border border-gray-300 hover:bg-gray-100 transition mt-3">
+
+                    ▼
+
+                </button>
+
+            </div>
+
+            <!-- ================= MOBILE THUMBNAILS ================= -->
+
+            <div
+                class="flex md:hidden gap-4 overflow-x-auto pb-2">
+
+                {% for image in product.images.all %}
+
+                    <img
+                        src="{{ image.optimized.400|default:image.original_image.url }}"
+                        loading="lazy"
+                        decoding="async"
+                        onclick="changeImage({{ forloop.counter0 }})"
+                        class="w-full h-full
+                            object-contain
+                            cursor-pointer
+                            border border-gray-200
+                            hover:border-black
+                            transition duration-300">
+
+                {% endfor %}
+
+            </div>
+        
+            <!-- Main Image Container -->
+            <div class="relative
+                    w-full
+                    h-[700px]
+                    overflow-hidden
+                    rounded-3xl
+                    group
+                    shadow-sm
+                    flex
+                    items-center
+                    justify-center">
+            
+                <picture>
+                    <source media="(max-width: 600px)"
+                            srcset="{{ product.images.first.optimized.400|default:product.images.first.original_image.url }}">
+                
+                    <source media="(max-width: 1024px)"
+                            srcset="{{ product.images.first.optimized.800|default:product.images.first.original_image.url }}">
+                
+                    <img id="mainImage"
+                        loading="eager"
+                        decoding="async"
+                        src="{{ product.images.first.optimized.1200|default:product.images.first.original_image.url }}"
+                        class="w-full h-full object-contain object-contain transition duration-500 hover:scale-[1.02]">
+                </picture>
+            
+            </div>
+        </div>
+        
+        <!-- Fullscreen Modal -->
+        <div id="imageModal"
+             class="fixed inset-0 bg-black/90 hidden items-center justify-center z-50">
+        
+            <button onclick="closeModal()"
+                    class="absolute top-6 right-8 text-white text-3xl">
+                ✕
+            </button>
+        
+            <button onclick="prevImage()"
+                    class="absolute left-8 text-white text-4xl">
+                ←
+            </button>
+        
+            <img id="modalImage"
+                 class="max-h-[90%] max-w-[90%] object-contain transition duration-300">
+        
+            <button onclick="nextImage()"
+                    class="absolute right-8 text-white text-4xl">
+                →
+            </button>
+        </div>
+        
+        <!-- Product Info -->
+        <!-- Product Info -->
+        <div class="pt-2 lg:pt-10">
+
+                <h1 class="text-3xl md:text-5xl
+                        font-light
+                        tracking-[0.08em]
+                        uppercase
+                        leading-tight">
+                    {{ product.name }}
+                </h1>
+
+            <p class="mt-5
+                text-gray-500
+                text-[15px]
+                tracking-[0.05em]
+                leading-8
+                max-w-lg">
+                Crafted for comfort and designed for everyday confidence.
+            </p>
+
+            {% comment %} LOW STOCK LOGIC {% endcomment %}
+                {% with min_stock=product.variants.all|dictsort:"stock"|first %}
+                    {% if min_stock.stock <= 5 %}
+                        <span class="inline-flex
+                                    items-center
+                                    text-[#8B5E3C]
+                                    text-sm
+                                    tracking-[0.12em]
+                                    uppercase">
+
+                            🔥 Only Few Left — Order Soon
+
+                        </span>
+                    {% endif %}
+                {% endwith %}
+            <div class="flex gap-2 mt-4 mb-8">
+
+                {% if product.is_best_seller %}
+                <span class="bg-black text-white
+                            px-3 py-1
+                            rounded-full
+                            text-[10px]
+                            uppercase
+                            tracking-[0.15em]">
+                    Best Seller
+                </span>
+                {% endif %}
+
+                {% if product.is_new_arrival %}
+                <span class="bg-[#6B7A46] text-white
+                            px-3 py-1
+                            rounded-full
+                            text-[10px]
+                            uppercase
+                            tracking-[0.15em]">
+                    New Arrival
+                </span>
+                {% endif %}
+
+            </div>
+
+
+                <!-- PRICE -->
+                {% if product.get_final_price != product.price %}
+
+                    <div class="flex items-center gap-4 mt-4 flex-wrap">
+
+                        <p class="text-[28px]
+                                md:text-[34px]
+                                font-light
+                                tracking-[0.04em]
+                                text-black">
+
+                            ₹{{ product.get_final_price }}
+
+                        </p>
+
+                    </div>
+
+                {% else %}
+
+                    <p class="text-[28px]
+                            md:text-[34px]
+                            font-light
+                            tracking-[0.04em]
+                            text-black">
+
+                        ₹{{ product.price }}
+
+                    </p>
+
+                {% endif %}
+
+                <div class="flex items-center gap-3 mt-3 flex-wrap">
+                        <!--MRP--> 
+                        <p class="text-[15px]
+                            text-gray-400
+                            line-through
+                            tracking-[0.04em]">
+
+                            ₹{{ product.mrp }}
+
+                        </p>
+
+                        <!-- DISCOUNT -->
+                        <span class="bg-black text-white
+                                    text-[10px]
+                                    font-semibold
+                                    px-3 py-1
+                                    rounded-full
+                                    uppercase">
+
+                            {{ product.get_discount_percentage }}% Off
+
+                        </span>
+
+                </div>
+
+
+            <form id="addToCartForm"
+                method="post"
+                action="{% url 'add_to_cart' %}">
+                {% csrf_token %}
+
+                <input
+                type="hidden"
+                name="buy_now"
+                id="buyNowFlag"
+                value="0">
+            
+                    <div class="mb-6">
+
+                        <label class="block mb-3 text-sm uppercase tracking-[0.14em] font-semibold">
+                            Size
+                        </label>
+
+                        <input
+                            type="hidden"
+                            name="variant_id"
+                            id="selectedVariant"
+                        >
+
+                        <div class="flex flex-wrap gap-3">
+
+
+                            {% for variant in product.variants.all %}
+
+                                {% if variant.stock > 0 %}
+
+                                    <button
+                                        type="button"
+                                        class="size-btn
+                                            px-5
+                                            py-3
+                                            border
+                                            rounded-xl
+                                            text-sm
+                                            font-medium
+                                            hover:border-black
+                                            hover:shadow-md
+                                            hover:-translate-y-1
+                                            duration-200
+                                            transition"
+                                        data-variant="{{ variant.id }}"
+                                    >
+                                        {{ variant.size }}
+                                    </button>
+
+                                {% else %}
+
+                                    <div class="flex flex-col items-center">
+
+                                        <button
+                                            type="button"
+                                            disabled
+                                            class="
+                                                w-14
+                                                h-14
+                                                rounded-xl
+                                                border
+                                                border-gray-300
+                                                bg-gray-100
+                                                text-gray-400
+                                                line-through
+                                                cursor-not-allowed
+                                                opacity-60
+                                                relative
+                                            ">
+
+                                            {{ variant.size }}
+
+                                        </button>
+
+
+                                    </div>
+
+                                {% endif %}
+
+                            {% endfor %}
+
+
+                        </div>
+
+                        {% if has_out_of_stock %}
+
+                            <div
+                                class="mt-4
+                                rounded-2xl
+                                border
+                                border-blue-200
+                                bg-blue-50
+                                px-5
+                                py-4">
+
+                                <div class="flex gap-3">
+
+                                    <div class="text-blue-600 text-lg">
+
+                                     ⓘ
+
+                                    </div>
+
+                                    <div>
+
+                                        <p class="font-semibold text-gray-800">
+
+                                        Some sizes are currently unavailable.
+
+                                        </p>
+
+                                        <p class="text-sm text-gray-600 mt-1">
+
+                                        <span class="font-medium">
+
+                                        Out of Stock:
+
+                                        </span>
+
+                                        {% for size in out_of_stock_sizes %}
+                                        {{ size }}{% if not forloop.last %}, {% endif %}
+                                        {% endfor %}
+
+                                        </p>
+
+                                        <p class="text-sm text-gray-500 mt-2">
+
+                                        These sizes will be available once inventory is replenished.
+
+                                        </p>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        {% endif %}
+                        <p
+                            id="sizeError"
+                            class="hidden mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+
+                            <span class="font-semibold">⚠ Please select your preferred size.</span>
+
+                        </p>
+
+                    </div>
+
+                    <div class="hidden md:grid grid-cols-2 gap-4 mt-6">
+
+                        <button
+                            type="button"
+                            id="buyNowBtn"
+                            class="
+                                bg-gradient-to-r
+                                from-emerald-500
+                                to-green-700
+                                hover:from-emerald-600
+                                hover:to-green-800
+                                text-white
+                                py-4
+                                rounded-xl
+                                uppercase
+                                tracking-[0.15em]
+                                font-semibold
+                                shadow-lg
+                                hover:scale-[1.02]
+                                transition-all
+                                duration-200"
+                        >
+                            Buy Now
+                        </button>
+
+                        <button
+                            type="submit"
+                            class="
+                                bg-gradient-to-r
+                                from-gray-900
+                                to-black
+                                hover:from-black
+                                hover:to-gray-700
+                                text-white
+                                py-4
+                                rounded-xl
+                                uppercase
+                                tracking-[0.15em]
+                                font-semibold
+                                shadow-lg
+                                hover:scale-[1.02]
+                                transition-all
+                                duration-200"
+                        >
+                            Add To Cart
+                        </button>
+
+                    </div>
+
+                    <div class="mt-8">
+
+                        <label
+                            for="deliveryPincode"
+                            class="block mb-3 text-sm uppercase tracking-[0.14em] font-semibold">
+                            Select Delivery Location
+                        </label>
+
+                        <div class="flex gap-3">
+
+                            <input
+                                id="deliveryPincode"
+                                type="text"
+                                inputmode="numeric"
+                                maxlength="6"
+                                placeholder="Enter PIN Code"
+                                class="flex-1 border rounded-xl px-4 py-3"
+                            >
+
+                            <button
+                                id="checkDeliveryBtn"
+                                type="button"
+                                class="bg-black text-white px-6 rounded-xl">
+                                Check
+                            </button>
+
+                        </div>
+
+                        <div
+                            id="deliveryResult"
+                            class="hidden mt-4 rounded-xl px-4 py-3 text-sm">
+                        </div>
+
+                    </div>
+
+            </form>
+
+                <!-- ================= TRUST + DELIVERY + URGENCY ================= -->
+                <div class="mt-8 space-y-3 text-sm text-gray-700">
+
+                    <div class="grid grid-cols-2 gap-4 mt-8">
+
+                        <div class="border
+                            rounded-2xl
+                            p-4
+                            text-center
+                            bg-white
+                            shadow-sm
+                            font-semibold">
+                            COD Available
+                        </div>
+
+                        <div class="border
+                            rounded-2xl
+                            p-4
+                            text-center
+                            bg-white
+                            shadow-sm
+                            font-semibold">
+                            Free Shipping
+                        </div>
+
+                        <div class="border
+                            rounded-2xl
+                            p-4
+                            text-center
+                            bg-white
+                            shadow-sm
+                            font-semibold">
+                            Easy Returns
+                        </div>
+
+                        <div class="border
+                            rounded-2xl
+                            p-4
+                            text-center
+                            bg-white
+                            shadow-sm
+                            font-semibold">
+                            Secure Payment
+                        </div>
+
+                    </div>
+
+                    <p class="mt-3 text-gray-600 font-semibold">
+                        🚚 Delivery in 3–5 Business Days
+                    </p>
+
+                </div>
+
+                <!-- ================= PRODUCT DESCRIPTION ================= -->
+                <div class="mt-10 border-t pt-6">
+
+                    <h3 class="text-sm uppercase tracking-[0.18em] font-semibold mb-4">
+                        Product Description
+                    </h3>
+
+                    <p class="whitespace-pre-line text-gray-600 leading-relaxed">
+                        {{ product.description|default:"Premium quality product designed for comfort and everyday confidence." }}
+                    </p>
+
+                </div>
+                <!-- ================= CUSTOMER STYLE GALLERY ================= -->
+
+                {% if gallery_photos.exists %}
+                    <div class="mt-12 border-t pt-8">
+
+                        <h3 class="text-sm uppercase tracking-[0.18em] font-semibold mb-6">
+
+                            Customers In EVIBE
+
+                        </h3>
+
+                        <p class="text-gray-500 text-sm mb-5">
+
+                            See how customers style EVIBE.
+
+                        </p>
+
+                        <div
+                            id="styleGallery"
+                            class="flex gap-4 overflow-x-auto pb-4 whitespace-nowrap cursor-grab">
+
+                            {% for photo in gallery_photos %}
+
+                                <div class="inline-block flex-shrink-0">
+
+                                    <img
+                                        src="{{ photo.optimized.400|default:photo.original_image.url }}"
+                                        loading="lazy"
+                                        class="w-44 h-56 md:w-56 md:h-72
+                                            object-cover
+                                            rounded-2xl
+                                            shadow-sm
+                                            hover:scale-[1.02]
+                                            transition duration-300">
+
+                                </div>
+
+                            {% endfor %}
+
+                        </div>
+
+                    </div>
+                {% endif %}
+
+                {% if review_count > 0 %}
+
+                        <div class="mt-12 border-t pt-8">
+
+                            <h3 class="text-sm uppercase tracking-[0.18em] font-semibold mb-4">
+
+                                Customer Reviews
+
+                            </h3>
+
+                            <div class="flex items-center gap-3 flex-wrap">
+
+                                <div class="text-xl font-semibold">
+
+                                    ★ {{ average_rating }}
+
+                                </div>
+
+                                <div class="text-gray-500">
+
+                                    ({{ review_count }} Reviews)
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="mt-5">
+
+                        <select
+                            class="border
+                                border-gray-300
+                                rounded-xl
+                                px-4 py-2
+                                text-sm
+                                bg-white">
+
+                            <option>
+                                Most Recent
+                            </option>
+
+                            <option>
+                                Highest Rating
+                            </option>
+
+                            <option>
+                                Lowest Rating
+                            </option>
+
+                            <option>
+                                Most Helpful
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    {% for review in featured_reviews %}
+
+                        <div class="mt-6 border rounded-2xl p-5">
+
+                            <div class="flex items-start justify-between">
+
+                                <div>
+
+                                    <div class="font-semibold">
+                                        {{ review.display_name }}
+                                    </div>
+
+                                    {% if review.city %}
+                                        <div class="text-sm text-gray-500">
+                                            {{ review.city }}
+                                        </div>
+                                    {% endif %}
+
+                                </div>
+
+                                {% if review.is_verified_buyer %}
+                                    <span
+                                        class="inline-flex
+                                            items-center
+                                            gap-1
+                                            text-xs
+                                            bg-green-50
+                                            text-green-700
+                                            px-3 py-1
+                                            rounded-full">
+
+                                        ✓ Verified Buyer
+
+                                    </span>
+                                {% endif %}
+
+                            </div>
+
+                            <div class="mt-4 text-lg">
+
+                                {% for i in "12345" %}
+                                    {% if forloop.counter <= review.rating %}
+                                        ★
+                                    {% else %}
+                                        ☆
+                                    {% endif %}
+                                {% endfor %}
+
+                            </div>
+
+                            <p class="mt-3 text-gray-700 leading-relaxed">
+                                {{ review.review }}
+                            </p>
+
+                            {% if review.helpful_count > 0 %}
+                                <div class="mt-4 text-sm text-gray-500">
+                                    👍 {{ review.helpful_count }} found this helpful
+                                </div>
+                            {% endif %}
+
+                            {% if review.images.all %}
+
+                                <div class="flex gap-3 overflow-x-auto mt-4">
+
+                                    {% for image in review.images.all %}
+
+                                        <img
+                                            src="{{ image.optimized.400|default:image.original_image.url }}"
+                                            class="w-20 h-20
+                                                object-cover
+                                                rounded-xl
+                                                flex-shrink-0">
+
+                                    {% endfor %}
+
+                                </div>
+
+                            {% endif %}
+
+                        </div>
+
+                        {% empty %}
+
+                        <div class="mt-6 text-gray-500">
+
+                            Be the first to review this product!
+
+                        </div>
+
+                        {% endfor %}
+
+                        <div class="mt-8">
+
+                            <a
+                                href="{% url 'product_reviews' product.slug %}"
+                                class="inline-flex
+                                    items-center
+                                    border
+                                    border-black
+                                    px-6 py-3
+                                    rounded-xl
+                                    text-sm
+                                    hover:bg-black
+                                    hover:text-white
+                                    transition">
+
+                                View All Reviews
+
+                            </a>
+
+                        </div>
+
+                {% endif %}
+            <div class="mt-10 pt-6 border-t text-sm text-gray-500 space-y-2">
+                <p><strong>Product Code:</strong> {{ product.product_code }}</p>
+                <p><strong>Category:</strong> {{ product.category }}</p>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ===================================================== -->
+    <!-- MORE FROM THIS COLLECTION -->
+    <!-- ===================================================== -->
+
+    <section class="mt-16 border-t pt-12">
+
+        <div class="text-center">
+
+            <p class="text-xs uppercase tracking-[0.35em] text-gray-500">
+
+                MORE FROM THIS COLLECTION
+
+            </p>
+
+            <a href="{% url 'category_products' product.category.name %}"
+            class="inline-flex items-center mt-5 text-2xl md:text-3xl font-light tracking-wide hover:underline">
+
+                Explore the complete {{ product.category.name|title }} Collection →
+
+            </a>
+
+        </div>
+
+    </section>
+
+
+    <!-- ===================================================== -->
+    <!-- YOU MAY ALSO LIKE -->
+    <!-- ===================================================== -->
+
+    {% if similar_products %}
+
+    <section class="mt-20">
+
+        <div class="text-center mb-12">
+
+            <p class="text-xs uppercase tracking-[0.35em] text-gray-500">
+
+                YOU MAY ALSO LIKE
+
+            </p>
+
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5 md:gap-8">
+
+            {% for item in similar_products %}
+
+            <a href="{% url 'product_detail' item.slug %}" class="group">
+
+                <div class="overflow-hidden rounded-2xl">
+
+                    <img
+                        src="{{ item.images.first.optimized.800|default:item.images.first.original_image.url }}"
+                        class="w-full h-full object-contain transition duration-500 group-hover:scale-105">
+
+                </div>
+
+                <div class="mt-5 text-center">
+
+                    <h3 class="product-title">
+
+                        {{ item.name }}
+
+                    </h3>
+
+                    <p class="mt-2 text-xl font-semibold">
+
+                        ₹{{ item.get_final_price }}
+
+                    </p>
+
+                    <span class="mt-4 inline-flex items-center text-sm uppercase tracking-[0.15em]">
+
+                        View Product →
+
+                    </span>
+
+                </div>
+
+            </a>
+
+            {% endfor %}
+
+        </div>
+
+    </section>
+
+    {% endif %}
+
+        <div class="fixed bottom-0 left-0 right-0 md:hidden z-50 bg-white border-t shadow-xl">
+            <div class="grid grid-cols-2">
+
+                <button
+                    id="stickyBuyNow"
+                    type="button"
+                    class="bg-gradient-to-r from-emerald-500 to-green-700
+                        hover:from-emerald-600 hover:to-green-800
+                        text-white
+                        py-4
+                        font-semibold
+                        uppercase
+                        tracking-wide
+                        transition-all
+                        duration-200">
+
+                    ⚡ BUY NOW
+
+                </button>
+
+                <button
+                    type="button"
+                    id="stickyAddToCart"
+                    class="bg-gradient-to-r
+                        from-gray-900
+                        to-black
+                        hover:from-black
+                        hover:to-gray-700
+                        text-white
+                        py-4
+                        font-semibold
+                        uppercase
+                        tracking-wide
+                        transition-all
+                        duration-200">
+
+                    🛒 ADD TO CART
+
+                </button>
+
+            </div>
+
+    </div>
+</section>
+
+<script>
+    const images = [
+        {% for image in product.images.all %}
+            "{{ image.optimized.1200|default:image.original_image.url }}",
+        {% endfor %}
+    ];
+
+    let currentIndex = 0;
+    const mainImage = document.getElementById("mainImage");
+    const modal = document.getElementById("imageModal");
+    const modalImage = document.getElementById("modalImage");
+	
+    mainImage.addEventListener("click", openModal);	
+    
+    function changeImage(index) {
+
+        currentIndex = index;
+
+        mainImage.classList.add("opacity-0");
+
+        setTimeout(() => {
+
+            mainImage.src = images[currentIndex];
+            modalImage.src = images[currentIndex];
+
+            mainImage.classList.remove("opacity-0");
+
+        }, 150);
+
+        // Highlight active thumbnail
+        document.querySelectorAll("#desktopThumbnailColumn img, .md\\:hidden img")
+            .forEach((img, i) => {
+
+                if (i === index) {
+
+                    img.classList.add(
+                        "border-black",
+                        "ring-2",
+                        "ring-black"
+                    );
+
+                    img.classList.remove("border-gray-200");
+
+                } else {
+
+                    img.classList.remove(
+                        "border-black",
+                        "ring-2",
+                        "ring-black"
+                    );
+
+                    img.classList.add("border-gray-200");
+
+                }
+
+            });
+
+        // Auto-scroll desktop thumbnails
+        const viewport = document.getElementById("desktopThumbnailViewport");
+        const desktopThumbs =
+            document.querySelectorAll("#desktopThumbnailColumn img");
+
+        if (viewport && desktopThumbs[index]) {
+
+            desktopThumbs[index].scrollIntoView({
+
+                behavior: "smooth",
+                block: "nearest"
+
+            });
+
+        }
+
+    }
+
+    function nextImage() {
+        currentIndex = (currentIndex + 1) % images.length;
+        changeImage(currentIndex);
+    }
+
+    function prevImage() {
+        currentIndex = (currentIndex - 1 + images.length) % images.length;
+        changeImage(currentIndex);
+    }
+
+    function openModal() {
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
+        modalImage.src = images[currentIndex];
+    }
+
+    function closeModal() {
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+    }
+
+    // 🔥 Cursor-follow Zoom (Luxury Effect)
+/*
+        mainImage.addEventListener("mousemove", function(e) {
+        const rect = mainImage.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        mainImage.style.transformOrigin = `${x}px ${y}px`;
+        mainImage.style.transform = "scale(2)";
+    });
+
+    mainImage.addEventListener("mouseleave", function() {
+        mainImage.style.transform = "scale(1)";
+    });
+*/
+    // 📱 Swipe for Mobile
+    let startX = 0;
+
+    mainImage.addEventListener("touchstart", e => {
+        startX = e.touches[0].clientX;
+    });
+
+    mainImage.addEventListener("touchend", e => {
+        let endX = e.changedTouches[0].clientX;
+
+        if (startX - endX > 50) {
+            nextImage();
+        } else if (endX - startX > 50) {
+            prevImage();
+        }
+    });
+
+    // Desktop click-and-drag scrolling
+
+    const styleGallery =
+        document.getElementById("styleGallery");
+
+    if (styleGallery) {
+
+        let isDown = false;
+        let startX;
+        let scrollLeft;
+
+        styleGallery.addEventListener("mousedown", (e) => {
+
+            isDown = true;
+
+            styleGallery.classList.add("cursor-grabbing");
+
+            startX =
+                e.pageX -
+                styleGallery.offsetLeft;
+
+            scrollLeft =
+                styleGallery.scrollLeft;
+        });
+
+        styleGallery.addEventListener("mouseleave", () => {
+
+            isDown = false;
+
+            styleGallery.classList.remove(
+                "cursor-grabbing"
+            );
+        });
+
+        styleGallery.addEventListener("mouseup", () => {
+
+            isDown = false;
+
+            styleGallery.classList.remove(
+                "cursor-grabbing"
+            );
+        });
+
+        styleGallery.addEventListener("mousemove", (e) => {
+
+            if (!isDown) return;
+
+            e.preventDefault();
+
+            const x =
+                e.pageX -
+                styleGallery.offsetLeft;
+
+            const walk =
+                (x - startX) * 2;
+
+            styleGallery.scrollLeft =
+                scrollLeft - walk;
+        });
+    }
+
+/* ===========================================================
+   Desktop Vertical Thumbnail Scroller
+   =========================================================== */
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    const viewport = document.getElementById("desktopThumbnailViewport");
+    const column = document.getElementById("desktopThumbnailColumn");
+    const up = document.getElementById("thumbUp");
+    const down = document.getElementById("thumbDown");
+
+    if (!viewport || !column) return;
+
+    const thumbs = column.querySelectorAll("img");
+
+    if (thumbs.length === 0) return;
+
+    const gap = 16;                       // gap-4 = 16px
+    const step = thumbs[0].offsetHeight + gap;
+
+    up?.addEventListener("click", () => {
+        viewport.scrollBy({
+            top: -step,
+            behavior: "smooth"
+        });
+    });
+
+    down?.addEventListener("click", () => {
+        viewport.scrollBy({
+            top: step,
+            behavior: "smooth"
+        });
+    });
+
+    viewport.addEventListener("wheel", (e) => {
+        e.preventDefault();
+
+        viewport.scrollBy({
+            top: e.deltaY,
+            behavior: "smooth"
+        });
+
+    }, { passive: false });
+
+});
+
+document.querySelectorAll(".size-btn").forEach(button => {
+
+    button.addEventListener("click", function () {
+
+        document.querySelectorAll(".size-btn").forEach(btn => {
+
+            btn.classList.remove(
+                "bg-black",
+                "text-white",
+                "border-black",
+                "shadow-lg",
+                "scale-105"
+            );
+
+        });
+
+        this.classList.add(
+            "bg-black",
+            "text-white",
+            "border-black",
+            "shadow-lg",
+            "scale-105"
+        );
+
+        document.getElementById("selectedVariant").value =
+            this.dataset.variant;
+
+        // Hide error once size is selected
+        document.getElementById("sizeError")
+            ?.classList.add("hidden");
+
+    });
+
+});
+
+function showSizeError() {
+
+    const error = document.getElementById("sizeError");
+
+    error.classList.remove("hidden");
+
+    error.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+    });
+
+    clearTimeout(window.sizeErrorTimer);
+
+    window.sizeErrorTimer = setTimeout(() => {
+
+        error.classList.add("hidden");
+
+    }, 3000);
+
+}
+
+
+document.getElementById("addToCartForm")
+    ?.addEventListener("submit", function(e){
+
+    if(!document.getElementById("selectedVariant").value){
+
+        e.preventDefault();
+
+        showSizeError();
+
+    }
+
+});
+
+function submitBuyNow() {
+
+    if (!document.getElementById("selectedVariant").value) {
+
+        showSizeError();
+
+        return;
+
+    }
+
+    document.getElementById("buyNowFlag").value = "1";
+
+    document.getElementById("addToCartForm").submit();
+
+}
+
+document.getElementById("buyNowBtn")
+    ?.addEventListener("click", submitBuyNow);
+
+document.getElementById("stickyBuyNow")
+    ?.addEventListener("click", submitBuyNow);
+
+document.getElementById("stickyAddToCart")?.addEventListener("click", function(){
+
+    document.getElementById("addToCartForm").requestSubmit();
+
+});
+
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const pincodeInput =
+        document.getElementById("deliveryPincode");
+
+    const checkButton =
+        document.getElementById("checkDeliveryBtn");
+
+    const result =
+        document.getElementById("deliveryResult");
+
+
+    checkButton.addEventListener("click", async function () {
+
+        const pincode =
+            pincodeInput.value.trim();
+
+
+        // Invalid PIN
+        if (!/^\d{6}$/.test(pincode)) {
+
+            result.className =
+                "mt-4 rounded-xl px-4 py-3 text-sm " +
+                "border border-red-200 bg-red-50 text-red-700";
+
+            result.textContent =
+                "✕ Delivery unavailable";
+
+            return;
+        }
+
+
+        try {
+
+            const response = await fetch(
+                `/ajax/pincode/?pincode=${encodeURIComponent(pincode)}`
+            );
+
+            const data = await response.json();
+
+
+            if (data.success) {
+
+                result.className =
+                    "mt-4 rounded-xl px-4 py-3 text-sm " +
+                    "border border-green-200 bg-green-50 text-green-700";
+
+                result.textContent =
+                    "✓ Delivery available";
+
+            } else {
+
+                result.className =
+                    "mt-4 rounded-xl px-4 py-3 text-sm " +
+                    "border border-red-200 bg-red-50 text-red-700";
+
+                result.textContent =
+                    "✕ Delivery unavailable";
+            }
+
+        } catch (error) {
+
+            console.error(error);
+
+            result.className =
+                "mt-4 rounded-xl px-4 py-3 text-sm " +
+                "border border-red-200 bg-red-50 text-red-700";
+
+            result.textContent =
+                "✕ Delivery unavailable";
+        }
+
+    });
+
+});
+
+
+</script>
+
+{% endblock %}
