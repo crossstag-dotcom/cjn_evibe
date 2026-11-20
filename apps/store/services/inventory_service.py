@@ -51,6 +51,13 @@ def post_stock_movement(*, variant, warehouse, delta, reason, reference, user):
         raise ValidationError("A reference is required.")
     if reason not in StockMovement.Reason.values:
         raise ValidationError("Invalid stock movement reason.")
+    if reason in (StockMovement.Reason.RECEIPT, StockMovement.Reason.RETURN) and delta < 0:
+        raise ValidationError("Receipts and returns must increase stock.")
+    if reason == StockMovement.Reason.ISSUE and delta > 0:
+        raise ValidationError("Goods issues must decrease stock.")
+    reference = reference.strip()
+    if len(reference) > 100:
+        raise ValidationError("Movement reference exceeds 100 characters.")
     # Lock warehouse before checking references and creating balances.
     locked_warehouse = Warehouse.objects.select_for_update().get(pk=warehouse.pk)
     if not locked_warehouse.active:
