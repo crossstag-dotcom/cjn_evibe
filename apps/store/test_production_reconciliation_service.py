@@ -70,3 +70,18 @@ class ProductionReconciliationTests(TestCase):
         self.transfer("T1", 106)
         with self.assertRaises(ValidationError):
             cutting_to_stitching_reconciliation(completion_id=self.completion.pk)
+
+    def test_received_more_than_issued_is_rejected(self):
+        self.transfer("OVER-RECEIPT", 20, received=21)
+        with self.assertRaises(ValidationError):
+            cutting_to_stitching_reconciliation(completion_id=self.completion.pk)
+
+    def test_multiple_receipts_accumulate_without_losing_shortages(self):
+        self.transfer("BATCH-A", 40, received=39)
+        self.transfer("BATCH-B", 60, received=58)
+        result = cutting_to_stitching_reconciliation(completion_id=self.completion.pk)
+        self.assertEqual(result["totals"]["issued"], 100)
+        self.assertEqual(result["totals"]["received"], 97)
+        self.assertEqual(result["totals"]["receipt_shortage"], 3)
+        self.assertEqual(result["totals"]["remaining_in_cutting"], 5)
+        self.assertTrue(result["balanced"])
