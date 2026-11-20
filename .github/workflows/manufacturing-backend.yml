@@ -32,6 +32,7 @@ jobs:
             apps.store.test_cutting_completion_service \
             apps.store.test_stitching_transfer_service \
             apps.store.test_stitching_receipt_service \
+            apps.store.test_production_reconciliation_service \
             --verbosity 2
       - name: Flag migrations that still need committing
         run: |
