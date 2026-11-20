@@ -17,6 +17,10 @@
 .evibe-dashboard table { width:100%; background:var(--ev-panel); color:var(--ev-text); border-collapse:collapse; }
 .evibe-dashboard th,.evibe-dashboard td { padding:12px; border-bottom:1px solid #374452; text-align:left; color:var(--ev-text); }
 .evibe-dashboard canvas { max-width:100%; }
+.evibe-dashboard .evibe-nav { display:flex; flex-wrap:wrap; gap:10px; margin:20px 0 12px; }
+.evibe-dashboard .evibe-nav a { display:inline-block; border:1px solid #536170; background:#273441; color:#f6f2ea; text-decoration:none; border-radius:9px; padding:11px 16px; font-weight:600; }
+.evibe-dashboard .evibe-nav a:hover,.evibe-dashboard .evibe-nav a:focus-visible { border-color:var(--ev-gold); color:var(--ev-gold); }
+.evibe-dashboard .evibe-nav .evibe-nav-current { border-color:var(--ev-gold); color:var(--ev-gold); }
 @media(max-width:850px) { .evibe-dashboard .evibe-grid,.evibe-dashboard .evibe-grid.charts { grid-template-columns:repeat(2,minmax(0,1fr)); } }
 @media(max-width:560px) { .evibe-dashboard .evibe-grid,.evibe-dashboard .evibe-grid.charts { grid-template-columns:1fr; } .evibe-dashboard { padding:14px; } }
 </style>
@@ -24,6 +28,13 @@
 
 <h1>EVIBE · Executive Analytics</h1>\n<p class="evibe-subtitle">Operational overview · Live Django data</p>
 
+<nav class="evibe-nav" aria-label="Dashboard navigation">
+  <a class="evibe-nav-current" href="{{ request.path }}">Overview</a>
+  {% for item in navigation %}
+    <a href="{{ item.url }}">{{ item.label }}</a>
+  {% endfor %}
+</nav>
+<p class="evibe-subtitle">Links are shown according to your Django staff permissions.</p>
 <hr>
 
 <!-- ================= METRICS ================= -->
